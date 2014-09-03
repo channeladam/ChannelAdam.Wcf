@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>ChannelAdam.Wcf</id>
+    <version>$version$</version>
+    <title>ChannelAdam WCF Library</title>
+    <authors>Adam Craven</authors>
+    <owners>Adam Craven</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>https://channeladamwcf.codeplex.com</projectUrl>
+    <iconUrl>https://devzone.channeladam.com/img/channeladam/channeladam-logo.png</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>https://DevZone.ChannelAdam.com presents a library that handles the subtleties of consuming services using Microsoft's Windows Communication Foundation (WCF) library - including correctly performing the Close/Abort pattern and preventing memory and server connection leaks.</description>
+    <releaseNotes>Initial release.</releaseNotes>
+    <copyright>Copyright 2014 Adam Craven</copyright>
+    <tags>WCF Service Operation Close Abort Retry ServiceConsumer ServiceConsumerFactory</tags>
+  </metadata>
+</package>

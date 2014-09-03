@@ -1,0 +1,16 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+*.nupkg
+/src/packages
+*.suo
+/src/ChannelAdam.Wcf/bin/Debug
+/src/ChannelAdam.Wcf/obj/Debug
+/src/ChannelAdam.Wcf/ChannelAdam.Wcf.csproj.user
+/src/ChannelAdam.Wcf/StyleCop.Cache
+/src/ChannelAdam.Wcf.BehaviourSpecs/bin/Debug
+/src/ChannelAdam.Wcf.BehaviourSpecs/obj/Debug
+/src/ChannelAdam.Wcf.BehaviourSpecs/ChannelAdam.Wcf.BehaviourSpecs.csproj.user
+/src/ChannelAdam.Wcf/bin/Release
+/src/ChannelAdam.Wcf/obj/Release

@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{65874E43-5A8F-4FB4-94FE-7046985F4705}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ChannelAdam</RootNamespace>
+    <AssemblyName>ChannelAdam.Wcf</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>d3b123d4</NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\ChannelAdamCodeAnalysis.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>ChannelAdam.Wcf.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ChannelAdam.Core">
+      <HintPath>..\packages\ChannelAdam.Core.1.0.0.0\lib\net45\ChannelAdam.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.TransientFaultHandling.Core">
+      <HintPath>..\packages\TransientFaultHandling.Core.5.1.1209.1\lib\NET4\Microsoft.Practices.TransientFaultHandling.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceModel\DefaultServiceChannelCloseTriggerStrategy.cs" />
+    <Compile Include="ServiceModel\Internal\DisposableServiceChannelProxy{TServiceInterface}.cs" />
+    <Compile Include="ServiceModel\Internal\ServiceOperationExpressionAdapter.cs" />
+    <Compile Include="ServiceModel\IOperationResult.cs" />
+    <Compile Include="ServiceModel\IOperationResult{TResult}.cs" />
+    <Compile Include="ServiceModel\IServiceChannelCloseTriggerStrategy.cs" />
+    <Compile Include="ServiceModel\NullServiceConsumerExceptionBehaviourStrategy.cs" />
+    <Compile Include="ServiceModel\OperationResult.cs" />
+    <Compile Include="ServiceModel\OperationResult{TResult}.cs" />
+    <Compile Include="ServiceModel\SoapFaultWebServiceTransientErrorDetectionStrategy.cs" />
+    <Compile Include="ServiceModel\StandardErrorServiceConsumerExceptionBehaviourStrategy.cs" />
+    <Compile Include="ServiceModel\StandardOutServiceConsumerExceptionBehaviourStrategy.cs" />
+    <Compile Include="ServiceModel\Internal\IServiceChannelProxyExceptionBehaviours.cs" />
+    <Compile Include="ServiceModel\IServiceConsumerExceptionBehaviourStrategy.cs" />
+    <Compile Include="ServiceModel\IServiceConsumer.cs" />
+    <Compile Include="ServiceModel\Internal\DisposableServiceChannelProxy.cs" />
+    <Compile Include="ServiceModel\Internal\ServiceChannelFactory.cs" />
+    <Compile Include="ServiceModel\ServiceConsumer.cs" />
+    <Compile Include="ServiceModel\ServiceConsumerFactory.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ChannelAdam.Wcf.nuspec" />
+    <None Include="ChannelAdam.Wcf.snk" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDictionary Include="..\CustomDictionary.xml">
+      <Link>CustomDictionary.xml</Link>
+    </CodeAnalysisDictionary>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\StyleCop.MSBuild.4.7.49.0\build\StyleCop.MSBuild.Targets" Condition="Exists('..\packages\StyleCop.MSBuild.4.7.49.0\build\StyleCop.MSBuild.Targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\StyleCop.MSBuild.4.7.49.0\build\StyleCop.MSBuild.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\StyleCop.MSBuild.4.7.49.0\build\StyleCop.MSBuild.Targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChannelAdam.Wcf", "ChannelAdam.Wcf\ChannelAdam.Wcf.csproj", "{65874E43-5A8F-4FB4-94FE-7046985F4705}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChannelAdam.Wcf.BehaviourSpecs", "ChannelAdam.Wcf.BehaviourSpecs\ChannelAdam.Wcf.BehaviourSpecs.csproj", "{E8C50340-498E-42DC-8E77-DE50467F91E5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1CACA559-501A-4D51-99EF-C38E37A61E0F}"
+	ProjectSection(SolutionItems) = preProject
+		ChannelAdamCodeAnalysis.ruleset = ChannelAdamCodeAnalysis.ruleset
+		CustomDictionary.xml = CustomDictionary.xml
+		Settings.StyleCop = Settings.StyleCop
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{65874E43-5A8F-4FB4-94FE-7046985F4705}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65874E43-5A8F-4FB4-94FE-7046985F4705}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65874E43-5A8F-4FB4-94FE-7046985F4705}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65874E43-5A8F-4FB4-94FE-7046985F4705}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8C50340-498E-42DC-8E77-DE50467F91E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8C50340-498E-42DC-8E77-DE50467F91E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8C50340-498E-42DC-8E77-DE50467F91E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8C50340-498E-42DC-8E77-DE50467F91E5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
