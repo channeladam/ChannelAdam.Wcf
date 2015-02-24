@@ -114,6 +114,7 @@
     </Compile>
     <Compile Include="TestDoubles\ConstructorInjectedController.cs" />
     <Compile Include="TestDoubles\FakeExceptionHandlingStrategy.cs" />
+    <Compile Include="TestDoubles\FakeServiceImpl.cs" />
     <Compile Include="TestDoubles\IFakeService.cs" />
     <Compile Include="TestDoubles\FakeServiceClient.cs" />
     <Compile Include="SampleUsage.cs" />

@@ -120,10 +120,10 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
                 // 
                 // OR more 'correctly'
                 //
-                //.RegisterType<IFakeService, FakeServiceClient>(new TransientLifetimeManager())
-                //.RegisterType<IServiceConsumer<IFakeService>>(
-                //    new InjectionFactory(c => 
-                //        ServiceConsumerFactory.Create<IFakeService>(() => (ICommunicationObject) c.Resolve<IFakeService>())))
+                .RegisterType<IFakeService, FakeServiceClient>(new TransientLifetimeManager())
+                .RegisterType<IServiceConsumer<IFakeService>>(
+                    new InjectionFactory(c =>
+                        ServiceConsumerFactory.Create<IFakeService>(() => (ICommunicationObject)c.Resolve<IFakeService>())))
                 ;
 
         }
@@ -285,10 +285,23 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
             this.weakRefServiceConsumer = new WeakReference<ServiceConsumer<IFakeService>>(consumer, true);
         }
 
+        ////[Given(@"a factory method to create a new service channel with the iDesign InProcFactory")]
+        ////public void GivenAFactoryMethodToCreateANewServiceChannelWithTheIDesignInProcFactory()
+        ////{
+        ////    this.serviceChannelFactoryMethod = () =>
+        ////    {
+        ////        serviceChannelCreatedCount++;
+        ////        Logger.Log("Created new Service Channel");
+
+        ////        return (ICommunicationObject) ServiceModelEx.InProcFactory.CreateInstance<FakeServiceImpl, IFakeService>();
+        ////    };
+        ////}
+
         #endregion
 
         #region When
 
+        [Given(@"the service consumer is created with the factory method")]
         [When(@"the service consumer is created with the factory method")]
         public void WhenTheServiceConsumerIsCreatedWithTheFactoryMethod()
         {
@@ -345,7 +358,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
         public async void WhenAnOperationIsInvokedAsynchronously()
         {
             expectedResult = 3;
-            actualResult = await this.serviceConsumer.Operations.AddIntegersAsync(1, 2);
+            actualResult = await this.serviceConsumer.Operations.AddTwoIntegersAsync(1, 2);
         }
 
         [When(@"the operation is called and a '(.*)' exception occurs")]
@@ -465,6 +478,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
 
         #region Then
 
+        [Given(@"the service consumer used the factory method to create a new service channel")]
         [Then(@"the service consumer used the factory method to create a new service channel")]
         public void ThenTheServiceConsumerUsedTheFactoryMethodToCreateANewServiceChannel()
         {
@@ -566,6 +580,18 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
 
             Assert.IsTrue(memoryAfter - this.memoryBefore < 450*1024, "allowed variance was ~450kb - primaily for System.Configuration");
         }
+
+
+
+
+
+
+        [Then(@"the service consumer is explicitly closed")]
+        public void ThenTheServiceConsumerIsExplicitlyClosed()
+        {
+            this.serviceConsumer.Close();
+        }
+
 
         #endregion
 

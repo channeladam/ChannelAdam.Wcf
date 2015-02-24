@@ -31,6 +31,6 @@ namespace ChannelAdam.Wcf.BehaviourSpecs.TestDoubles
         int AddIntegers(int first, int second);
 
         [OperationContract]
-        Task<int> AddIntegersAsync(int first, int second);
+        Task<int> AddTwoIntegersAsync(int first, int second);
     }
 }

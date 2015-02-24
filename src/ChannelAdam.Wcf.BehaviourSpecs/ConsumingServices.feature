@@ -218,3 +218,15 @@ Scenario: ConsumingServices - 070 - Positive - Should not leak memory
 When many service consumers are created in a tight loop and go out of scope immediately over '15' seconds
 And garbage collection is performed 
 Then there is no significant amount of memory loss 
+
+
+
+### External library tests
+
+#@UnitTest
+#Scenario: ConsumingServices - 100 - Postive - Should work with iDesign InProcFactory
+#Given a factory method to create a new service channel with the iDesign InProcFactory
+#And the service consumer is created with the factory method
+#And the service consumer used the factory method to create a new service channel
+#When an operation is invoked synchronously
+#Then the operation was invoked

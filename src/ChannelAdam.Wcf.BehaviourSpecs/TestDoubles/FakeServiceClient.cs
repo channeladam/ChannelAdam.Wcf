@@ -35,7 +35,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs.TestDoubles
             return first + second;
         }
 
-        public virtual Task<int> AddIntegersAsync(int first, int second)
+        public virtual Task<int> AddTwoIntegersAsync(int first, int second)
         {
             // let's just pretend we called a service elsewhere - but don't tell anyone... ;)
             return Task.FromResult<int>(first + second);

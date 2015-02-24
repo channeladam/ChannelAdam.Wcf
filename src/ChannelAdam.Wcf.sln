@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChannelAdam.Wcf", "ChannelAdam.Wcf\ChannelAdam.Wcf.csproj", "{65874E43-5A8F-4FB4-94FE-7046985F4705}"
 EndProject
@@ -14,22 +14,51 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Settings.StyleCop = Settings.StyleCop
 	EndProjectSection
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharpTestConsoleApplication", "FSharpTestConsoleApplication\FSharpTestConsoleApplication.fsproj", "{9BA94498-B4D3-4BCB-8432-6B9E3213EE22}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Design|Any CPU = Design|Any CPU
+		Design|x86 = Design|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{65874E43-5A8F-4FB4-94FE-7046985F4705}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{65874E43-5A8F-4FB4-94FE-7046985F4705}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65874E43-5A8F-4FB4-94FE-7046985F4705}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{65874E43-5A8F-4FB4-94FE-7046985F4705}.Design|Any CPU.ActiveCfg = Debug|Any CPU
+		{65874E43-5A8F-4FB4-94FE-7046985F4705}.Design|Any CPU.Build.0 = Debug|Any CPU
+		{65874E43-5A8F-4FB4-94FE-7046985F4705}.Design|x86.ActiveCfg = Debug|Any CPU
 		{65874E43-5A8F-4FB4-94FE-7046985F4705}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65874E43-5A8F-4FB4-94FE-7046985F4705}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65874E43-5A8F-4FB4-94FE-7046985F4705}.Release|x86.ActiveCfg = Release|Any CPU
 		{E8C50340-498E-42DC-8E77-DE50467F91E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E8C50340-498E-42DC-8E77-DE50467F91E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8C50340-498E-42DC-8E77-DE50467F91E5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E8C50340-498E-42DC-8E77-DE50467F91E5}.Design|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8C50340-498E-42DC-8E77-DE50467F91E5}.Design|Any CPU.Build.0 = Debug|Any CPU
+		{E8C50340-498E-42DC-8E77-DE50467F91E5}.Design|x86.ActiveCfg = Debug|Any CPU
 		{E8C50340-498E-42DC-8E77-DE50467F91E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E8C50340-498E-42DC-8E77-DE50467F91E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8C50340-498E-42DC-8E77-DE50467F91E5}.Release|x86.ActiveCfg = Release|Any CPU
+		{9BA94498-B4D3-4BCB-8432-6B9E3213EE22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BA94498-B4D3-4BCB-8432-6B9E3213EE22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BA94498-B4D3-4BCB-8432-6B9E3213EE22}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9BA94498-B4D3-4BCB-8432-6B9E3213EE22}.Design|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BA94498-B4D3-4BCB-8432-6B9E3213EE22}.Design|Any CPU.Build.0 = Debug|Any CPU
+		{9BA94498-B4D3-4BCB-8432-6B9E3213EE22}.Design|x86.ActiveCfg = Debug|Any CPU
+		{9BA94498-B4D3-4BCB-8432-6B9E3213EE22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BA94498-B4D3-4BCB-8432-6B9E3213EE22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BA94498-B4D3-4BCB-8432-6B9E3213EE22}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\TransientFaultHandling.Core.5.1.1209.1\lib\NET4
 	EndGlobalSection
 EndGlobal
