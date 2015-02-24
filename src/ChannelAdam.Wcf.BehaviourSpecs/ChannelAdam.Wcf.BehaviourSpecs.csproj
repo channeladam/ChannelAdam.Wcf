@@ -19,6 +19,7 @@
     <StyleCopOverrideSettingsFile>Settings.StyleCop</StyleCopOverrideSettingsFile>
     <BuildToolsStyleCopVersion>4.7.44.0</BuildToolsStyleCopVersion>
     <NuGetPackageImportStamp>1f0b7722</NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,6 +32,7 @@
     <StyleCopEnabled>False</StyleCopEnabled>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -41,19 +43,20 @@
     <WarningLevel>4</WarningLevel>
     <StyleCopEnabled>True</StyleCopEnabled>
     <StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Autofac">
       <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
     </Reference>
     <Reference Include="ChannelAdam.Core">
-      <HintPath>..\packages\ChannelAdam.Core.1.0.0.0\lib\net45\ChannelAdam.Core.dll</HintPath>
+      <HintPath>..\packages\ChannelAdam.Core.1.1.0\lib\net45\ChannelAdam.Core.dll</HintPath>
     </Reference>
     <Reference Include="ChannelAdam.TestFramework">
-      <HintPath>..\packages\ChannelAdam.TestFramework.1.0.0.0\lib\net45\ChannelAdam.TestFramework.dll</HintPath>
+      <HintPath>..\packages\ChannelAdam.TestFramework.1.1.1\lib\net45\ChannelAdam.TestFramework.dll</HintPath>
     </Reference>
     <Reference Include="ChannelAdam.TestFramework.MSTest">
-      <HintPath>..\packages\ChannelAdam.TestFramework.MSTest.1.0.0.0\lib\net45\ChannelAdam.TestFramework.MSTest.dll</HintPath>
+      <HintPath>..\packages\ChannelAdam.TestFramework.MSTest.1.1.1\lib\net45\ChannelAdam.TestFramework.MSTest.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Practices.TransientFaultHandling.Core">
@@ -69,13 +72,13 @@
       <HintPath>..\packages\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
     </Reference>
     <Reference Include="Moq">
-      <HintPath>..\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
+      <HintPath>..\packages\Moq.4.2.1502.0911\lib\net40\Moq.dll</HintPath>
     </Reference>
     <Reference Include="SimpleInjector">
-      <HintPath>..\packages\SimpleInjector.2.5.2\lib\net45\SimpleInjector.dll</HintPath>
+      <HintPath>..\packages\SimpleInjector.2.7.2\lib\net45\SimpleInjector.dll</HintPath>
     </Reference>
     <Reference Include="SimpleInjector.Diagnostics">
-      <HintPath>..\packages\SimpleInjector.2.5.2\lib\net45\SimpleInjector.Diagnostics.dll</HintPath>
+      <HintPath>..\packages\SimpleInjector.2.7.2\lib\net45\SimpleInjector.Diagnostics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -122,18 +125,14 @@
     <Compile Include="TestDoubles\NullServiceChannelCloseTriggerStrategy.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ChannelAdam.Wcf\ChannelAdam.Wcf.csproj">
-      <Project>{65874e43-5a8f-4fb4-94fe-7046985f4705}</Project>
-      <Name>ChannelAdam.Wcf</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="App.config" />
     <None Include="ConsumingServices.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ConsumingServices.feature.cs</LastGenOutput>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Service References\SampleServiceReference\SampleService.wsdl" />
     <None Include="Service References\SampleServiceReference\SampleService.xsd">
       <SubType>Designer</SubType>
@@ -152,7 +151,9 @@
     <None Include="Service References\SampleServiceReference\SampleService.disco" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Service References\SampleServiceReference\configuration91.svcinfo" />
+    <None Include="Service References\SampleServiceReference\configuration91.svcinfo">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="Service References\SampleServiceReference\configuration.svcinfo" />
@@ -167,6 +168,12 @@
     <CodeAnalysisDictionary Include="..\CustomDictionary.xml">
       <Link>CustomDictionary.xml</Link>
     </CodeAnalysisDictionary>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ChannelAdam.Wcf\ChannelAdam.Wcf.csproj">
+      <Project>{65874e43-5a8f-4fb4-94fe-7046985f4705}</Project>
+      <Name>ChannelAdam.Wcf</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

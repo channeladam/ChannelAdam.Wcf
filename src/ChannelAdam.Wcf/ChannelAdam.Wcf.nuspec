@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<package >
+<package>
   <metadata>
     <id>ChannelAdam.Wcf</id>
-    <version>$version$</version>
+    <version>1.1.0</version>
     <title>ChannelAdam WCF Library</title>
     <authors>Adam Craven</authors>
     <owners>Adam Craven</owners>
@@ -11,8 +11,19 @@
     <iconUrl>https://devzone.channeladam.com/img/channeladam/channeladam-logo.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>https://DevZone.ChannelAdam.com presents a library that handles the subtleties of consuming services using Microsoft's Windows Communication Foundation (WCF) library - including correctly performing the Close/Abort pattern and preventing memory and server connection leaks.</description>
-    <releaseNotes>Initial release.</releaseNotes>
-    <copyright>Copyright 2014 Adam Craven</copyright>
+    <releaseNotes>
+1.1.0 - Added support for targeting .NET Framework 4.0 in addition to .NET Framework 4.5.
+1.0.0 - Initial release targeting .NET Framework 4.5.
+    </releaseNotes>
+    <copyright>Copyright 2014-2015 Adam Craven</copyright>
     <tags>WCF Service Operation Close Abort Retry ServiceConsumer ServiceConsumerFactory</tags>
+    <dependencies>
+      <dependency id="ChannelAdam.Core" version="1.1.0" />
+    </dependencies>    
   </metadata>
+  <files>
+    <file src="bin\Release\**\ChannelAdam.Wcf.dll" target="lib" />
+    <file src="bin\Release\**\ChannelAdam.Wcf.pdb" target="lib" />
+    <file src="**\*.cs" exclude="obj\**\*;bin\**\*" target="src" />
+  </files>
 </package>
