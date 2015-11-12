@@ -112,6 +112,20 @@ namespace ChannelAdam.ServiceModel
             Console.Error.WriteLine(exception == null ? NullPhrase : exception.ToString());
         }
 
+        #region IRetryEnabledServiceChannelProxyExceptionBehaviour Implementation
+
+        /// <summary>
+        /// The behaviour to perform when an exception occurs when a retry policy is in use.
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        /// <param name="attemptCount">The attempt count. One is the first attempt, not the first retry.</param>
+        public void PerformRetryPolicyAttemptExceptionBehaviour(Exception exception, int attemptCount)
+        {
+            Console.Error.WriteLine($"RetryPolicy Attempt {attemptCount}:" + exception == null ? NullPhrase : exception.ToString());
+        }
+
+        #endregion
+
         #region IDestructorExceptionHandler Implementation
 
         /// <summary>

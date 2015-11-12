@@ -19,17 +19,13 @@ namespace ChannelAdam.ServiceModel
 {
     using System;
     using System.Linq.Expressions;
-    using System.ServiceModel;
-
-    using ChannelAdam.ServiceModel.Internal;
-    
-    using Microsoft.Practices.TransientFaultHandling;
+    using ChannelAdam.TransientFaultHandling;
 
     /// <summary>
     /// Interface for a <see cref="IDisposable"/> WCF Service Consumer.
     /// </summary>
     /// <typeparam name="TServiceInterface">The type of the service interface.</typeparam>
-    public interface IServiceConsumer<TServiceInterface> : IDisposable 
+    public interface IServiceConsumer<TServiceInterface> : IDisposable
     {
         #region Properties
 
@@ -56,9 +52,9 @@ namespace ChannelAdam.ServiceModel
         /// The retry policy.
         /// </value>
         /// <remarks>
-        /// Warning: the retry policy is only used with the <c>Call</c> method. 
+        /// Warning: the retry policy is only used with the <c>Call</c> method.
         /// If you use the <c>Operations</c> property to call your service operations, the retry policy is not applied.</remarks>
-        RetryPolicy RetryPolicy { get; set; } 
+        IRetryPolicyFunction RetryPolicy { get; set; }
 
         /// <summary>
         /// Gets the service channel proxy.
@@ -68,11 +64,11 @@ namespace ChannelAdam.ServiceModel
         /// </value>
         /// <remarks>
         /// Warning: the retry policy is NOT used if you call a service operation directly through this property!
-        /// The retry policy is only used with the <c>Call</c> method. 
+        /// The retry policy is only used with the <c>Call</c> method.
         /// </remarks>
         TServiceInterface Operations { get; }
 
-        #endregion 
+        #endregion
 
         #region Methods
 
@@ -87,17 +83,6 @@ namespace ChannelAdam.ServiceModel
         IOperationResult Consume(Expression<Action<TServiceInterface>> serviceOperationExpression);
 
         /// <summary>
-        /// Consumes the specified service operation, using the specified retry policy.
-        /// </summary>
-        /// <param name="serviceOperationExpression">The service operation expression.</param>
-        /// <param name="retryPolicy">The retry policy to use.</param>
-        /// <returns>
-        /// An <see cref="OperationResult" />.
-        /// </returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This rule was created before Expressions.")]
-        IOperationResult Consume(Expression<Action<TServiceInterface>> serviceOperationExpression, RetryPolicy retryPolicy);
-
-        /// <summary>
         /// Consumes the specified service operation, using the default retry policy.
         /// </summary>
         /// <typeparam name="TReturnValue">The type of the return value.</typeparam>
@@ -108,18 +93,6 @@ namespace ChannelAdam.ServiceModel
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This rule was created before Expressions.")]
         IOperationResult<TReturnValue> Consume<TReturnValue>(Expression<Func<TServiceInterface, TReturnValue>> serviceOperationExpression);
 
-        /// <summary>
-        /// Consumes the specified service operation, using the specified retry policy.
-        /// </summary>
-        /// <typeparam name="TReturnValue">The type of the return value.</typeparam>
-        /// <param name="serviceOperationExpression">The service operation expression.</param>
-        /// <param name="retryPolicy">The retry policy to use.</param>
-        /// <returns>
-        /// An <see cref="OperationResult{TReturnValue}" /> with the return type specified by the method within the expression.
-        /// </returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This rule was created before Expressions.")]
-        IOperationResult<TReturnValue> Consume<TReturnValue>(Expression<Func<TServiceInterface, TReturnValue>> serviceOperationExpression, RetryPolicy retryPolicy);
-        
         /// <summary>
         /// Closes the service channel.
         /// </summary>

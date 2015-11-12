@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>ChannelAdam.Wcf</id>
-    <version>1.1.1</version>
+    <version>2.0.0</version>
     <title>ChannelAdam WCF Library</title>
     <authors>Adam Craven</authors>
     <owners>Adam Craven</owners>
@@ -12,6 +12,7 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>https://DevZone.ChannelAdam.com presents a library that handles the subtleties of consuming services using Microsoft's Windows Communication Foundation (WCF) library - including correctly performing the Close/Abort pattern and preventing memory and server connection leaks.</description>
     <releaseNotes>
+2.0.0 - Breaking change - Retry policy is now also applied to the calls made via the Operations property. Removed dependency on Microsoft Transient Fault Handling Core library.
 1.1.1 - Fixed missing dependency in NuSpec file on TransientFaultHandling.Core.
 1.1.0 - Added support for targeting .NET Framework 4.0 in addition to .NET Framework 4.5.
 1.0.0 - Initial release targeting .NET Framework 4.5.
@@ -21,7 +22,7 @@
     <dependencies>
       <dependency id="ChannelAdam.Core" version="1.1.0" />
       <dependency id="TransientFaultHandling.Core" version="5.1.1209.1" />
-    </dependencies>    
+    </dependencies>
   </metadata>
   <files>
     <file src="bin\Release\**\ChannelAdam.Wcf.dll" target="lib" />

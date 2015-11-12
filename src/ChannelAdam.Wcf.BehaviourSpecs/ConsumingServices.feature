@@ -57,21 +57,26 @@ Then the operation was invoked
 @UnitTest
 Scenario: ConsumingServices - 015 - Positive - Should by default keep the service channel open and reusable when a FaultException occurs while invoking a service operation
 Given a service consumer is created with an operation that throws a 'fault' exception
-When the operation is called and a 'fault' exception occurs
+When the operation is called via the Consume method and a 'fault' exception occurs
 Then the service channel was not closed or aborted, and remains open and usable
 
+### Retry Policy
+
 @UnitTest
-Scenario: ConsumingServices - 016 - Positive - Should use the default retry policy specified on the service consumer to perform retries with the Call method by default
-Given a service consumer is created with an operation that throws a 'communication' exception 
+Scenario: ConsumingServices - 016 - Positive - Should use the default retry policy specified on the service consumer to perform retries with the Call method
+Given a service consumer is created with an operation that throws a 'communication' exception
 And the service consumer has a default retry policy
-When the operation is called and a 'communication' exception occurs
+When the operation is called via the Consume method and a 'communication' exception occurs
 Then the operation was invoked multiple times due to the retry policy
- 
+Then the exception behaviour was invoked
+
 @UnitTest
-Scenario: ConsumingServices - 017 - Positive - Should use the retry policy passed into the Call method to perform retries instead of the default on the factory
-Given a service consumer is created with an operation that throws a 'communication' exception 
-When the operation is called with a retry policy and a 'communication' exception occurs
+Scenario: ConsumingServices - 017 - Positive - Should use the default retry policy specified on the service consumer to perform retries with the Operations property
+Given a service consumer is created with an operation that throws a 'communication' exception
+And the service consumer has a default retry policy with a retry policy attempt exception behaviour
+When the operation is called via the Operations property and a 'communication' exception occurs
 Then the operation was invoked multiple times due to the retry policy
+Then the exception behaviour was invoked
 
 
 ### Closing the channel ###
@@ -79,19 +84,19 @@ Then the operation was invoked multiple times due to the retry policy
 @UnitTest
 Scenario: ConsumingServices - 020 - Negative - Should by default close the service channel when a CommunicationException occurs while invoking a service operation
 Given a service consumer is created with an operation that throws a 'communication' exception
-When the operation is called and a 'communication' exception occurs
+When the operation is called via the Consume method and a 'communication' exception occurs
 Then the service channel was closed and disposed
 
 @UnitTest
 Scenario: ConsumingServices - 021 - Negative - Should by default close the service channel when a TimeoutException occurs while invoking a service operation
 Given a service consumer is created with an operation that throws a 'timeout' exception
-When the operation is called and a 'timeout' exception occurs
+When the operation is called via the Consume method and a 'timeout' exception occurs
 Then the service channel was closed and disposed
 
 @UnitTest
 Scenario: ConsumingServices - 022 - Negative - Should by default close the service channel when an unexpected Exception occurs while invoking a service operation
 Given a service consumer is created with an operation that throws a 'unexpected' exception
-When the operation is called and a 'unexpected' exception occurs
+When the operation is called via the Consume method and a 'unexpected' exception occurs
 Then the service channel was closed and disposed
 
 Scenario: ConsumingServices - 023 - Negative - Should by default close the service channel when a ThreadAbortedException occurs while invoking a service operation
@@ -102,7 +107,7 @@ Then the service channel was closed and disposed
 Scenario: ConsumingServices - 024 - Positive - Should have a customisable trigger strategy for when to close the service channel when any exception occurs while invoking a service operation
 Given a service consumer is created with an operation that throws a 'communication' exception
 And the service consumer has a custom service channel close trigger strategy that does not ever trigger the closing of the service channnel
-When the operation is called and a 'communication' exception occurs
+When the operation is called via the Consume method and a 'communication' exception occurs
 Then the service channel was not closed or aborted, and remains open and usable
 
 
@@ -215,9 +220,9 @@ Then the exception is not bubbled up to the calling code
 ### Memory Leak Testing
 
 Scenario: ConsumingServices - 070 - Positive - Should not leak memory
-When many service consumers are created in a tight loop and go out of scope immediately over '15' seconds
-And garbage collection is performed 
-Then there is no significant amount of memory loss 
+When many service consumers are created and used in a tight loop and go out of scope immediately over '15' seconds
+And garbage collection is performed
+Then there is no significant amount of memory loss
 
 
 

@@ -40,7 +40,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
         ////[TestMethod]
         ////public void Sample_Level100_BasicUsage_OperationsProperty_RealService()
         ////{
-        ////    using (var service = ServiceConsumerFactory.Create<ISampleService>("BasicHttpBinding_ISampleService")) 
+        ////    using (var service = ServiceConsumerFactory.Create<ISampleService>("BasicHttpBinding_ISampleService"))
         ////    {
         ////        try
         ////        {
@@ -67,7 +67,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
         [TestMethod]
         public void Sample_Level100_BasicUsage_OperationsProperty()
         {
-            //using (var service = ServiceConsumerFactory.Create<IFakeService>("BasicHttpBinding_IFakeService")) 
+            //using (var service = ServiceConsumerFactory.Create<IFakeService>("BasicHttpBinding_IFakeService"))
             using (var service = ServiceConsumerFactory.Create<IFakeService>(() => new FakeServiceClient()))
             {
                 try
@@ -130,7 +130,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
                 IOperationResult<int> result = service.Consume(operation => operation.AddIntegers(1, 1));
                 AssertOperationResult(2, result);
 
-                // Even if the channel had a communication exception and went into the fault state or was aborted, 
+                // Even if the channel had a communication exception and went into the fault state or was aborted,
                 // you can still use the service consumer!
 
                 result = service.Consume(operation => operation.AddIntegers(1, 3));
@@ -166,7 +166,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
         public void Sample_Level200_Static_DefaultExceptionBehaviourStrategy()
         {
             // Apply this exception behaviour strategy for all created service consumer instances.
-            // By default, out of the box, the default is a StandardErrorServiceConsumerExceptionBehaviourStrategy. 
+            // By default, out of the box, the default is a StandardErrorServiceConsumerExceptionBehaviourStrategy.
             ServiceConsumerFactory.DefaultExceptionBehaviourStrategy = new StandardOutServiceConsumerExceptionBehaviourStrategy();
 
             using (var service = ServiceConsumerFactory.Create<IFakeService>(() => new FakeServiceClient()))
@@ -258,7 +258,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
                     retryCount--;
                 }
             }
-            
+
             Assert.Fail("Service operation was not successfully called");
         }
 
@@ -280,7 +280,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
                     {
                         actual = service.Operations.AddIntegers(1, 1);
                     });
-                    
+
                     Console.WriteLine("Actual: " + actual);
                     Assert.AreEqual(2, actual);
 
@@ -305,7 +305,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
         public void Sample3_Level300_AutomaticRetry_TransientFaultHandling_DefaultWithCallMethod()
         {
             var retryStrategy = new Incremental(5, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2));
-            var retryPolicy = new RetryPolicy<SoapFaultWebServiceTransientErrorDetectionStrategy>(retryStrategy);
+            var retryPolicy = new RetryPolicy<SoapFaultWebServiceTransientErrorDetectionStrategy>(retryStrategy).ForServiceConsumer();
 
             using (var service = ServiceConsumerFactory.Create<IFakeService>(() => new FakeServiceClient(), retryPolicy))
             {
@@ -332,35 +332,35 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
             }
         }
 
-        [TestMethod]
-        public void Sample3_Level300_AutomaticRetry_TransientFaultHandling_OnCallMethod()
-        {
-            using (var service = ServiceConsumerFactory.Create<IFakeService>(() => new FakeServiceClient()))
-            {
-                var retryStrategy = new Incremental(5, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2));
-                var retryPolicy = new RetryPolicy<SoapFaultWebServiceTransientErrorDetectionStrategy>(retryStrategy);
+        //[TestMethod]
+        //public void Sample3_Level300_AutomaticRetry_TransientFaultHandling_OnCallMethod()
+        //{
+        //    using (var service = ServiceConsumerFactory.Create<IFakeService>(() => new FakeServiceClient()))
+        //    {
+        //        var retryStrategy = new Incremental(5, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2));
+        //        var retryPolicy = new RetryPolicy<SoapFaultWebServiceTransientErrorDetectionStrategy>(retryStrategy);
 
-                var result = service.Consume(operation => operation.AddIntegers(1, 1), retryPolicy);
+        //        var result = service.Consume(operation => operation.AddIntegers(1, 1), retryPolicy);
 
-                if (result.HasNoException)
-                {
-                    Console.WriteLine("Actual: " + result.Value);
-                    Assert.AreEqual(2, result.Value);
-                }
-                else
-                {
-                    if (result.HasFaultException)
-                    {
-                        Console.WriteLine("Service operation threw a fault: " + result.Exception.ToString());
-                    }
-                    else if (result.HasException)
-                    {
-                        Console.WriteLine("Technical error occurred while calling the service operation: " + result.Exception.ToString());
-                    }
+        //        if (result.HasNoException)
+        //        {
+        //            Console.WriteLine("Actual: " + result.Value);
+        //            Assert.AreEqual(2, result.Value);
+        //        }
+        //        else
+        //        {
+        //            if (result.HasFaultException)
+        //            {
+        //                Console.WriteLine("Service operation threw a fault: " + result.Exception.ToString());
+        //            }
+        //            else if (result.HasException)
+        //            {
+        //                Console.WriteLine("Technical error occurred while calling the service operation: " + result.Exception.ToString());
+        //            }
 
-                    Assert.Fail("Service operation was not successfully called");
-                }
-            }
-        }
+        //            Assert.Fail("Service operation was not successfully called");
+        //        }
+        //    }
+        //}
     }
 }

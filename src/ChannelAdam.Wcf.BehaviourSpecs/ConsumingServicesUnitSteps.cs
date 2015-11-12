@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="ConsumingServicesUnitSteps.cs">
-//     Copyright (c) 2014 Adam Craven. All rights reserved.
+//     Copyright (c) 2014-2015 Adam Craven. All rights reserved.
 // </copyright>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
 {
     using ChannelAdam.ServiceModel;
     using ChannelAdam.TestFramework.MSTest;
+    using ChannelAdam.TransientFaultHandling;
     using ChannelAdam.Wcf.BehaviourSpecs.TestDoubles;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -43,20 +44,20 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
     [Scope(Feature = "Consuming Services")]
     public class ConsumingServicesUnitSteps : MoqTestFixture
     {
-        Func<ICommunicationObject, DisposableServiceChannelProxy> disposableServiceChannelProxyFactoryMethod;
+        Func<ICommunicationObject, DisposableServiceChannelProxy<IFakeService>> disposableServiceChannelProxyFactoryMethod;
         Func<ICommunicationObject> serviceChannelFactoryMethod;
         IServiceConsumer<IFakeService> serviceConsumer;
         WeakReference<ServiceConsumer<IFakeService>> weakRefServiceConsumer = null;
         int actualResult = 0;
         int expectedResult = 0;
         Mock<IFakeService> mockService;
-        DisposableServiceChannelProxy disposableServiceChannelProxy;
+        DisposableServiceChannelProxy<IFakeService> disposableServiceChannelProxy;
         Mock<IServiceConsumerExceptionBehaviourStrategy> mockExceptionStrategy;
         Exception exceptionToThrowOnClosing = null;
         bool abortThreadOnClosing = false;
         Exception exceptionToThrowOnAborting = null;
-        int serviceChannelCreatedCount = 0, proxyCreatedCount = 0, 
-            proxyClosingCount = 0, proxyClosedCount = 0, 
+        int serviceChannelCreatedCount = 0, proxyCreatedCount = 0,
+            proxyClosingCount = 0, proxyClosedCount = 0,
             proxyAbortingCount = 0, proxyAbortedCount = 0,
             proxyDisposedCount = 0,
             operationCallCount = 0;
@@ -117,7 +118,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
                 //
                 //.RegisterType<IServiceConsumer<IFakeService>>(
                 //    new InjectionFactory(c => ServiceConsumerFactory.Create<IFakeService>(() => new FakeServiceClient())))
-                // 
+                //
                 // OR more 'correctly'
                 //
                 .RegisterType<IFakeService, FakeServiceClient>(new TransientLifetimeManager())
@@ -163,8 +164,17 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
         [Given(@"the service consumer has a default retry policy")]
         public void GivenTheServiceConsumerHasADefaultRetryPolicy()
         {
-            var retryStrategy = new FixedInterval(1);
-            this.serviceConsumer.RetryPolicy = new RetryPolicy<SoapFaultWebServiceTransientErrorDetectionStrategy>(retryStrategy);
+            var retryStrategy = new FixedInterval(1, TimeSpan.FromSeconds(2));
+            this.serviceConsumer.SetRetryPolicy(
+                new RetryPolicy<SoapFaultWebServiceTransientErrorDetectionStrategy>(retryStrategy));
+        }
+
+        [Given(@"the service consumer has a default retry policy with a retry policy attempt exception behaviour")]
+        public void GivenTheServiceConsumerHasADefaultRetryPolicyWithARetryExceptionBehaviour()
+        {
+            GivenTheServiceConsumerHasADefaultRetryPolicy();
+            CreateAndSetupMockExceptionStrategy("retry");
+            this.serviceConsumer.ExceptionBehaviourStrategy = this.mockExceptionStrategy.Object;
         }
 
         [Given(@"the service consumer has a custom service channel close trigger strategy that does not ever trigger the closing of the service channnel")]
@@ -178,7 +188,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
         {
             GivenAServiceConsumerIsCreatedWithAnOperationThatThrowsAException("thread abort");
         }
-        
+
         [Given(@"a service consumer with a channel that will fault")]
         public void GivenAServiceConsumerWithAChannelThatWillFault()
         {
@@ -209,7 +219,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
 
             CreateServiceConsumerWithMocks();
         }
-        
+
         [Given(@"a service consumer that will abort the thread when the service channel is closing")]
         public void GivenAServiceConsumerThatWillAbortTheThreadWhenTheServiceChannelIsClosing()
         {
@@ -230,10 +240,8 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
         [Given(@"a service consumer is created for testing garbage collection")]
         public void GivenAServiceConsumerIsCreatedForTestingGarbageCollection()
         {
-            var svc = new ServiceConsumer<IFakeService>(
-                    (channel) => CreateDisposableServiceChannelProxy(channel),
-                    () => new FakeServiceClient());
-            svc.ExceptionBehaviourStrategy = new StandardOutServiceConsumerExceptionBehaviourStrategy();
+            var svc = new ServiceConsumer<IFakeService>(CreateRetryEnabledDisposableServiceChannelProxy());
+            svc.ExceptionBehaviourStrategy = new FakeExceptionHandlingStrategy();
             this.weakRefServiceConsumer = new WeakReference<ServiceConsumer<IFakeService>>(svc, true);
         }
 
@@ -247,7 +255,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
             CreateAndSetupMockExceptionStrategy(typeOfException);
             CreateServiceConsumerWithMocksAndExceptionStrategy();
         }
-        
+
         [Given(@"a service consumer that will throw an '(.*)' exception when the service channel is closing and have a corresponding exception behaviour strategy")]
         public void GivenAServiceConsumerThatWillThrowAnExceptionWhenTheServiceChannelIsClosingAndHaveACorrespondingExceptionBehaviourStrategy(string typeOfException)
         {
@@ -276,9 +284,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
         {
             CreateAndSetupMockExceptionStrategyForDestructor();
 
-            var consumer = new ServiceConsumer<IFakeService>(
-                    (channel) => CreateDisposableServiceChannelProxy(channel),
-                    () => new FakeServiceClient());
+            var consumer = new ServiceConsumer<IFakeService>(CreateRetryEnabledDisposableServiceChannelProxy());
             consumer.ExceptionBehaviourStrategy = this.mockExceptionStrategy.Object;
 
             consumer.Disposed += consumer_Disposed;
@@ -344,7 +350,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
         [When(@"the service channel is accessed")]
         public void WhenTheServiceChannelIsAccessed()
         {
-            var ops = this.serviceConsumer.Operations;
+            var ops = this.serviceConsumer.Operations.ToString();
         }
 
         [When(@"an operation is invoked synchronously")]
@@ -361,8 +367,8 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
             actualResult = await this.serviceConsumer.Operations.AddTwoIntegersAsync(1, 2);
         }
 
-        [When(@"the operation is called and a '(.*)' exception occurs")]
-        public void WhenTheOperationIsCalledAndAExceptionOccurs(string typeOfException)
+        [When(@"the operation is called via the Consume method and a '(.*)' exception occurs")]
+        public void WhenTheOperationIsCalledViaTheConsumeMethodAndAExceptionOccurs(string typeOfException)
         {
             var result = this.serviceConsumer.Consume(op => op.AddIntegers(1, 2));
 
@@ -377,22 +383,15 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
             AssertExceptionWasThrown(typeOfException);
         }
 
-        [When(@"the operation is called with a retry policy and a '(.*)' exception occurs")]
-        public void WhenTheOperationIsCalledWithARetryPolicyAndAExceptionOccurs(string typeOfException)
+        [When(@"the operation is called and a '(.*)' exception occurs")]
+        [When(@"the operation is called via the Operations property and a '(.*)' exception occurs")]
+        public void WhenTheOperationIsCalledViaTheOperationsPropertyAndAExceptionOccurs(string typeOfException)
         {
-            var retryStrategy = new FixedInterval(1);
-            var retryPolicy = new RetryPolicy<SoapFaultWebServiceTransientErrorDetectionStrategy>(retryStrategy);
-
-            Logger.Log("About to call operation, passing in a specific RetryPolicy to the Call method");
-            var result = this.serviceConsumer.Consume(op => op.AddIntegers(1, 2), retryPolicy);
-
-            if (result.HasNoException)
+            base.Try(() =>
             {
-                this.actualResult = result.Value;
+                this.actualResult = this.serviceConsumer.Operations.AddIntegers(1, 2);
                 LogAssert.Fail(typeOfException + " exception did not occur");
-            }
-
-            this.ActualException = result.Exception;
+            });
 
             AssertExceptionWasThrown(typeOfException);
         }
@@ -438,7 +437,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
                 .GetAwaiter().GetResult();
             });
         }
-        
+
         [When(@"a service consumer is disposed at the end of a using block")]
         public void WhenAServiceConsumerIsDisposedAtTheEndOfAUsingBlock()
         {
@@ -456,7 +455,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
             GC.WaitForPendingFinalizers();
         }
 
-        [When(@"many service consumers are created in a tight loop and go out of scope immediately over '(.*)' seconds")]
+        [When(@"many service consumers are created and used in a tight loop and go out of scope immediately over '(.*)' seconds")]
         public void WhenManyServiceConsumersAreCreatedInATightLoopAndGoOutOfScopeImmediatelyOverSeconds(int seconds)
         {
             WhenGarbageCollectionIsPerformed();
@@ -469,7 +468,9 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
 
             while (DateTime.Now < endTime)
             {
-                ServiceConsumerFactory.Create<IFakeService>(() => new FakeServiceClient(), (IServiceConsumerExceptionBehaviourStrategy)null);
+                var consumer = ServiceConsumerFactory.Create<IFakeService>(() => new FakeServiceClient(), (IServiceConsumerExceptionBehaviourStrategy)null);
+                consumer.Operations.AddIntegers(1, 2);
+
                 Thread.Sleep(1);
             }
         }
@@ -534,7 +535,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
             LogAssert.AreEqual("Closing count", 0, this.proxyClosingCount);
             LogAssert.AreEqual("Closed count", 0, this.proxyClosedCount);
             LogAssert.AreEqual("Aborting count", 1, this.proxyAbortingCount);
-            LogAssert.AreEqual("Aborted count", 1, this.proxyAbortedCount);            
+            LogAssert.AreEqual("Aborted count", 1, this.proxyAbortedCount);
         }
 
         [Then(@"the service channel started closing, then aborted and disposed")]
@@ -578,20 +579,14 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
             long memoryAfter = GC.GetTotalMemory(true);
             Console.WriteLine("Total memory after: " + memoryAfter);
 
-            Assert.IsTrue(memoryAfter - this.memoryBefore < 450*1024, "allowed variance was ~450kb - primaily for System.Configuration");
+            Assert.IsTrue(memoryAfter - this.memoryBefore < 450*1024, "allowed variance was ~450kb - primarily for System.Configuration and testing libraries");
         }
-
-
-
-
-
 
         [Then(@"the service consumer is explicitly closed")]
         public void ThenTheServiceConsumerIsExplicitlyClosed()
         {
             this.serviceConsumer.Close();
         }
-
 
         #endregion
 
@@ -605,9 +600,9 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
                 .Callback(() =>
                     {
                         this.operationCallCount++;
-                        Logger.Log("AddIntegers(,) was called");
+                        Logger.Log("************** AddIntegers(,) was called");
                     });
-            
+
             this.serviceChannelFactoryMethod = () =>
             {
                 serviceChannelCreatedCount++;
@@ -623,7 +618,15 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
             };
         }
 
-        private DisposableServiceChannelProxy CreateDisposableServiceChannelProxy(ICommunicationObject serviceChannel)
+        private RetryEnabledDisposableServiceChannelProxy<IFakeService> CreateRetryEnabledDisposableServiceChannelProxy()
+        {
+            return new RetryEnabledDisposableServiceChannelProxy<IFakeService>(
+                    (channel) => CreateDisposableServiceChannelProxy(channel),
+                    () => new FakeServiceClient(),
+                    null);
+        }
+
+        private DisposableServiceChannelProxy<IFakeService> CreateDisposableServiceChannelProxy(ICommunicationObject serviceChannel)
         {
             var dsp = new DisposableServiceChannelProxy<IFakeService>(serviceChannel);
             dsp.ClosingChannelEvent.Subscribe(disposableServiceChannelProxy_ClosingChannel);
@@ -644,7 +647,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
             mockSetup.Callback(() =>
                 {
                     this.operationCallCount++;
-                    Logger.Log("AddIntegers(,) was called");
+                    Logger.Log("################# AddIntegers(,) was called");
                 });
 
             switch (typeOfException)
@@ -718,13 +721,21 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
 
         private void CreateServiceConsumerWithMocks()
         {
-            this.serviceConsumer = new ServiceConsumer<IFakeService>(this.disposableServiceChannelProxyFactoryMethod, this.serviceChannelFactoryMethod);
-            this.serviceConsumer.ExceptionBehaviourStrategy = new StandardOutServiceConsumerExceptionBehaviourStrategy();
+            var retryProxy = new RetryEnabledDisposableServiceChannelProxy<IFakeService>(
+                this.disposableServiceChannelProxyFactoryMethod,
+                this.serviceChannelFactoryMethod,
+                null);
+            this.serviceConsumer = new ServiceConsumer<IFakeService>(retryProxy);
+            this.serviceConsumer.ExceptionBehaviourStrategy = new FakeExceptionHandlingStrategy();
         }
 
         private void CreateServiceConsumerWithMocksAndExceptionStrategy()
         {
-            this.serviceConsumer = new ServiceConsumer<IFakeService>(this.disposableServiceChannelProxyFactoryMethod, this.serviceChannelFactoryMethod);
+            var retryProxy = new RetryEnabledDisposableServiceChannelProxy<IFakeService>(
+                this.disposableServiceChannelProxyFactoryMethod,
+                this.serviceChannelFactoryMethod,
+                null);
+            this.serviceConsumer = new ServiceConsumer<IFakeService>(retryProxy);
             this.serviceConsumer.ExceptionBehaviourStrategy = this.mockExceptionStrategy.Object;
         }
 
@@ -819,6 +830,17 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
                             (Exception fe) =>
                             {
                                 Logger.Log("Unexpected exception handler here");
+                            })
+                        .Verifiable();
+                    break;
+
+                case "retry":
+                    this.mockExceptionStrategy
+                        .Setup(m => m.PerformRetryPolicyAttemptExceptionBehaviour(It.IsAny<Exception>(), It.IsAny<int>()))
+                        .Callback(
+                            (Exception re, int attempt) =>
+                            {
+                                Logger.Log("Retry policy attempt exception handler here - attempt: " + attempt);
                             })
                         .Verifiable();
                     break;

@@ -19,7 +19,7 @@ namespace ChannelAdam.ServiceModel
 {
     using System;
     using System.ServiceModel;
-    
+
     /// <summary>
     /// An exception behaviour strategy for a Service Consumer that writes the exception details to standard out.
     /// </summary>
@@ -111,6 +111,20 @@ namespace ChannelAdam.ServiceModel
         {
             Console.Out.WriteLine(exception == null ? NullPhrase : exception.ToString());
         }
+
+        #region IRetryEnabledServiceChannelProxyExceptionBehaviour Implementation
+
+        /// <summary>
+        /// The behaviour to perform when an exception occurs when a retry policy is in use.
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        /// <param name="attemptCount">The attempt count. One is the first attempt, not the first retry.</param>
+        public void PerformRetryPolicyAttemptExceptionBehaviour(Exception exception, int attemptCount)
+        {
+            Console.Out.WriteLine($"RetryPolicy Attempt {attemptCount}:" + exception == null ? NullPhrase : exception.ToString());
+        }
+
+        #endregion
 
         #region IDestructorExceptionHandler Implementation
 

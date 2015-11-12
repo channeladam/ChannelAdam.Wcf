@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
 // <copyright file="ServiceConsumerFactory.cs">
-//     Copyright (c) 2014 Adam Craven. All rights reserved.
+//     Copyright (c) 2014-2015 Adam Craven. All rights reserved.
 // </copyright>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,8 +21,7 @@ namespace ChannelAdam.ServiceModel
     using System.ServiceModel;
 
     using ChannelAdam.ServiceModel.Internal;
-    
-    using Microsoft.Practices.TransientFaultHandling;
+    using ChannelAdam.TransientFaultHandling;
 
     /// <summary>
     /// A WCF Service Consumer Factory that creates <see cref="ServiceConsumer"/> instances.
@@ -31,7 +30,7 @@ namespace ChannelAdam.ServiceModel
     {
         private static IServiceConsumerExceptionBehaviourStrategy defaultExceptionBehaviourStrategy = StandardErrorServiceConsumerExceptionBehaviourStrategy.Instance;
 
-        private static RetryPolicy defaultRetryPolicy = null;
+        private static IRetryPolicyFunction defaultRetryPolicy = null;
 
         #region Public Static Properties
 
@@ -42,7 +41,7 @@ namespace ChannelAdam.ServiceModel
         /// The default retry policy.
         /// </value>
         /// <remarks>Out of the box, the default retry policy is not to retry.</remarks>
-        public static RetryPolicy DefaultRetryPolicy
+        public static IRetryPolicyFunction DefaultRetryPolicy
         {
             get
             {
@@ -64,7 +63,7 @@ namespace ChannelAdam.ServiceModel
         /// <remarks>
         /// Out of the box, this is the <see cref="StandardErrorServiceConsumerExceptionBehaviourStrategy"/>.
         /// </remarks>
-        public static IServiceConsumerExceptionBehaviourStrategy DefaultExceptionBehaviourStrategy 
+        public static IServiceConsumerExceptionBehaviourStrategy DefaultExceptionBehaviourStrategy
         {
             get
             {
@@ -103,7 +102,7 @@ namespace ChannelAdam.ServiceModel
         /// <returns>
         /// A <see cref="ServiceConsumer" />.
         /// </returns>
-        public static IServiceConsumer<TServiceInterface> Create<TServiceInterface>(Func<ICommunicationObject> factoryMethod, RetryPolicy retryPolicy)
+        public static IServiceConsumer<TServiceInterface> Create<TServiceInterface>(Func<ICommunicationObject> factoryMethod, IRetryPolicyFunction retryPolicy)
         {
             return CreateServiceConsumer<TServiceInterface>(factoryMethod, retryPolicy, defaultExceptionBehaviourStrategy, null);
         }
@@ -132,7 +131,7 @@ namespace ChannelAdam.ServiceModel
         /// <returns>
         /// A <see cref="ServiceConsumer" />.
         /// </returns>
-        public static IServiceConsumer<TServiceInterface> Create<TServiceInterface>(Func<ICommunicationObject> factoryMethod, RetryPolicy retryPolicy, IServiceConsumerExceptionBehaviourStrategy exceptionStrategy)
+        public static IServiceConsumer<TServiceInterface> Create<TServiceInterface>(Func<ICommunicationObject> factoryMethod, IRetryPolicyFunction retryPolicy, IServiceConsumerExceptionBehaviourStrategy exceptionStrategy)
         {
             return CreateServiceConsumer<TServiceInterface>(factoryMethod, retryPolicy, exceptionStrategy, null);
         }
@@ -148,7 +147,7 @@ namespace ChannelAdam.ServiceModel
         /// <returns>
         /// A <see cref="ServiceConsumer" />.
         /// </returns>
-        public static IServiceConsumer<TServiceInterface> Create<TServiceInterface>(Func<ICommunicationObject> factoryMethod, RetryPolicy retryPolicy, IServiceConsumerExceptionBehaviourStrategy exceptionStrategy, IServiceChannelCloseTriggerStrategy closeTriggerStrategy)
+        public static IServiceConsumer<TServiceInterface> Create<TServiceInterface>(Func<ICommunicationObject> factoryMethod, IRetryPolicyFunction retryPolicy, IServiceConsumerExceptionBehaviourStrategy exceptionStrategy, IServiceChannelCloseTriggerStrategy closeTriggerStrategy)
         {
             return CreateServiceConsumer<TServiceInterface>(factoryMethod, retryPolicy, exceptionStrategy, closeTriggerStrategy);
         }
@@ -180,7 +179,7 @@ namespace ChannelAdam.ServiceModel
         /// <returns>
         /// A <see cref="ServiceConsumer" />.
         /// </returns>
-        public static IServiceConsumer<TServiceInterface> Create<TServiceInterface>(string endpointConfigurationName, RetryPolicy retryPolicy)
+        public static IServiceConsumer<TServiceInterface> Create<TServiceInterface>(string endpointConfigurationName, IRetryPolicyFunction retryPolicy)
         {
             Func<ICommunicationObject> factoryMethod = () => ServiceChannelFactory.CreateChannel<TServiceInterface>(endpointConfigurationName);
             return ServiceConsumerFactory.Create<TServiceInterface>(factoryMethod, retryPolicy);
@@ -211,7 +210,7 @@ namespace ChannelAdam.ServiceModel
         /// <returns>
         /// A <see cref="ServiceConsumer" />.
         /// </returns>
-        public static IServiceConsumer<TServiceInterface> Create<TServiceInterface>(string endpointConfigurationName, RetryPolicy retryPolicy, IServiceConsumerExceptionBehaviourStrategy exceptionStrategy)
+        public static IServiceConsumer<TServiceInterface> Create<TServiceInterface>(string endpointConfigurationName, IRetryPolicyFunction retryPolicy, IServiceConsumerExceptionBehaviourStrategy exceptionStrategy)
         {
             Func<ICommunicationObject> factoryMethod = () => ServiceChannelFactory.CreateChannel<TServiceInterface>(endpointConfigurationName);
             return ServiceConsumerFactory.Create<TServiceInterface>(factoryMethod, retryPolicy, exceptionStrategy);
@@ -228,7 +227,7 @@ namespace ChannelAdam.ServiceModel
         /// <returns>
         /// A <see cref="ServiceConsumer" />.
         /// </returns>
-        public static IServiceConsumer<TServiceInterface> Create<TServiceInterface>(string endpointConfigurationName, RetryPolicy retryPolicy, IServiceConsumerExceptionBehaviourStrategy exceptionStrategy, IServiceChannelCloseTriggerStrategy closeTriggerStrategy)
+        public static IServiceConsumer<TServiceInterface> Create<TServiceInterface>(string endpointConfigurationName, IRetryPolicyFunction retryPolicy, IServiceConsumerExceptionBehaviourStrategy exceptionStrategy, IServiceChannelCloseTriggerStrategy closeTriggerStrategy)
         {
             Func<ICommunicationObject> factoryMethod = () => ServiceChannelFactory.CreateChannel<TServiceInterface>(endpointConfigurationName);
             return ServiceConsumerFactory.Create<TServiceInterface>(factoryMethod, retryPolicy, exceptionStrategy, closeTriggerStrategy);
@@ -238,7 +237,7 @@ namespace ChannelAdam.ServiceModel
 
         #region Private Static Methods
 
-        private static IServiceConsumer<TServiceInterface> CreateServiceConsumer<TServiceInterface>(Func<ICommunicationObject> factoryMethod, RetryPolicy retryPolicy, IServiceConsumerExceptionBehaviourStrategy exceptionStrategy, IServiceChannelCloseTriggerStrategy closeTriggerStrategy)
+        private static IServiceConsumer<TServiceInterface> CreateServiceConsumer<TServiceInterface>(Func<ICommunicationObject> factoryMethod, IRetryPolicyFunction retryPolicy, IServiceConsumerExceptionBehaviourStrategy exceptionStrategy, IServiceChannelCloseTriggerStrategy closeTriggerStrategy)
         {
             var consumer = new ServiceConsumer<TServiceInterface>(factoryMethod);
             consumer.ExceptionBehaviourStrategy = exceptionStrategy;

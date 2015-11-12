@@ -17,14 +17,15 @@
 
 namespace ChannelAdam.ServiceModel
 {
-    using System;
-
     using ChannelAdam.ServiceModel.Internal;
 
     /// <summary>
     /// Interface for an exception behaviour strategy for a service consumer.
     /// </summary>
-    public interface IServiceConsumerExceptionBehaviourStrategy : IServiceChannelProxyExceptionBehaviours, IDestructorExceptionBehaviour
+    public interface IServiceConsumerExceptionBehaviourStrategy
+        : IServiceChannelProxyExceptionBehaviours,
+          IRetryEnabledServiceChannelProxyExceptionBehaviours,
+          IDestructorExceptionBehaviour
     {
     }
 }

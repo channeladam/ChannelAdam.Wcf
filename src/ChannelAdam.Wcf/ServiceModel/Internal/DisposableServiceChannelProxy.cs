@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="DisposableServiceChannelProxy.cs">
-//     Copyright (c) 2014 Adam Craven. All rights reserved.
+//     Copyright (c) 2014-2015 Adam Craven. All rights reserved.
 // </copyright>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,21 +18,13 @@
 namespace ChannelAdam.ServiceModel.Internal
 {
     using System;
-    using System.Collections.Generic;
-    using System.Reflection;
-    using System.Runtime.Remoting;
     using System.Runtime.Remoting.Messaging;
-    using System.Runtime.Remoting.Proxies;
     using System.Security;
-    using System.Security.Permissions;
     using System.ServiceModel;
-    using System.Threading;
 
     using ChannelAdam.Events;
     using ChannelAdam.Runtime.Remoting.Proxies;
 
-    using Microsoft.Practices.TransientFaultHandling;
-    
     /// <summary>
     /// Proxies a WCF Service Client/Channel and correctly performs the Close/Abort pattern.
     /// </summary>
@@ -40,7 +32,7 @@ namespace ChannelAdam.ServiceModel.Internal
     /// The object to proxy is the proxy channel returned from ChannelFactory.CreateChannel().
     /// </remarks>
     [SecurityCritical]
-    public class DisposableServiceChannelProxy : DisposableObjectRealProxy
+    public class DisposableServiceChannelProxy : DisposableObjectRealProxy, IServiceChannelProxy
     {
         #region Fields
 
@@ -65,11 +57,12 @@ namespace ChannelAdam.ServiceModel.Internal
         /// </summary>
         /// <param name="serviceInterfaceType">Type of the service interface.</param>
         /// <param name="serviceChannelProxy">The service channel proxy.</param>
-        public DisposableServiceChannelProxy(Type serviceInterfaceType, ICommunicationObject serviceChannelProxy) : base(serviceInterfaceType)
+        public DisposableServiceChannelProxy(Type serviceInterfaceType, ICommunicationObject serviceChannelProxy)
+            : base(serviceInterfaceType)
         {
             this.InitialiseChannel(serviceChannelProxy);
         }
-        
+
         #endregion
 
         #region Public Properties - Events
@@ -139,26 +132,26 @@ namespace ChannelAdam.ServiceModel.Internal
         /// <value>
         /// The exception behaviour strategy.
         /// </value>
-        public IServiceConsumerExceptionBehaviourStrategy ExceptionBehaviourStrategy 
-        { 
+        public IServiceConsumerExceptionBehaviourStrategy ExceptionBehaviourStrategy
+        {
             get
             {
                 return this.exceptionStrategy ?? NullServiceConsumerExceptionBehaviourStrategy.Instance;
             }
- 
+
             set
             {
                 this.exceptionStrategy = value;
 
                 if (value == null)
                 {
-                    this.DestructorExceptionBehaviour = null;
+                    base.DestructorExceptionBehaviour = null;
                 }
                 else
                 {
-                    this.DestructorExceptionBehaviour = value.PerformDestructorExceptionBehaviour;
+                    base.DestructorExceptionBehaviour = value.PerformDestructorExceptionBehaviour;
                 }
-            } 
+            }
         }
 
         /// <summary>
@@ -219,7 +212,7 @@ namespace ChannelAdam.ServiceModel.Internal
             {
                 rootCauseException = ex.GetBaseException();
             }
-            finally 
+            finally
             {
                 // A 'finally' block is never interrupted by a ThreadAbortException
                 if (rootCauseException != null)
@@ -230,7 +223,7 @@ namespace ChannelAdam.ServiceModel.Internal
                     {
                         this.TryToCloseOrAbortServiceChannelAndPerformExceptionBehaviours();
                     }
-   
+
                     result = new ReturnMessage(rootCauseException, (IMethodCallMessage)msg);
                 }
             }
@@ -247,7 +240,7 @@ namespace ChannelAdam.ServiceModel.Internal
         {
             if (fe == null)
             {
-                throw new ArgumentNullException("fe");
+                throw new ArgumentNullException(nameof(fe));
             }
 
             Type faultType = fe.GetType();
@@ -409,7 +402,7 @@ namespace ChannelAdam.ServiceModel.Internal
                 {
                     this.OnUnexpectedException(ex);    // this may throw a new exception
                 }
-                catch (Exception again) 
+                catch (Exception again)
                 {
                     // Failsafe
                     Console.Error.WriteLine("Exception occurred while handling exception that occurred while trying to close or abort channel: " + again.ToString());
@@ -470,7 +463,7 @@ namespace ChannelAdam.ServiceModel.Internal
                 {
                     this.OnUnexpectedException(ex);    // this may throw a new exception
                 }
-                catch (Exception again) 
+                catch (Exception again)
                 {
                     // Failsafe
                     Console.Error.WriteLine("Exception occurred while handling exception that occurred in exception behaviours for invoking a service operation: " + again.ToString());
@@ -515,7 +508,7 @@ namespace ChannelAdam.ServiceModel.Internal
                 }
 
                 // If the channel has not been closed yet because:
-                // - State was Faulted; or 
+                // - State was Faulted; or
                 // - An exception occurred while doing the Close()
                 // Then do an Abort()
                 if (!isClosed)
@@ -551,7 +544,7 @@ namespace ChannelAdam.ServiceModel.Internal
                 {
                     this.OnCloseUnexpectedException(ex);    // this may throw a new exception
                 }
-                catch (Exception again) 
+                catch (Exception again)
                 {
                     // Failsafe
                     Console.Error.WriteLine("Exception occurred while handling exception that occurred in exception behaviours for closing the channel: " + again.ToString());
@@ -596,7 +589,7 @@ namespace ChannelAdam.ServiceModel.Internal
                 {
                     this.OnAbortException(ex);    // this may throw a new exception
                 }
-                catch (Exception again) 
+                catch (Exception again)
                 {
                     // Failsafe
                     Console.Error.WriteLine("Exception occurred while handling exception that occurred in exception behaviours for aborting the channel: " + again.ToString());

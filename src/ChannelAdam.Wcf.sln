@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChannelAdam.Wcf", "ChannelAdam.Wcf\ChannelAdam.Wcf.csproj", "{65874E43-5A8F-4FB4-94FE-7046985F4705}"
 EndProject
@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharpTestConsoleApplication", "FSharpTestConsoleApplication\FSharpTestConsoleApplication.fsproj", "{9BA94498-B4D3-4BCB-8432-6B9E3213EE22}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChannelAdam.Wcf.Microsoft.Practices.TransientFaultHandling.Core", "ChannelAdam.Wcf.Microsoft.Practices.TransientFaultHandling.Core\ChannelAdam.Wcf.Microsoft.Practices.TransientFaultHandling.Core.csproj", "{CFF3E599-A22A-4A37-B5B0-2045AE7B02EE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,12 +55,24 @@ Global
 		{9BA94498-B4D3-4BCB-8432-6B9E3213EE22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9BA94498-B4D3-4BCB-8432-6B9E3213EE22}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9BA94498-B4D3-4BCB-8432-6B9E3213EE22}.Release|x86.ActiveCfg = Release|Any CPU
+		{CFF3E599-A22A-4A37-B5B0-2045AE7B02EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFF3E599-A22A-4A37-B5B0-2045AE7B02EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFF3E599-A22A-4A37-B5B0-2045AE7B02EE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CFF3E599-A22A-4A37-B5B0-2045AE7B02EE}.Debug|x86.Build.0 = Debug|Any CPU
+		{CFF3E599-A22A-4A37-B5B0-2045AE7B02EE}.Design|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFF3E599-A22A-4A37-B5B0-2045AE7B02EE}.Design|Any CPU.Build.0 = Debug|Any CPU
+		{CFF3E599-A22A-4A37-B5B0-2045AE7B02EE}.Design|x86.ActiveCfg = Debug|Any CPU
+		{CFF3E599-A22A-4A37-B5B0-2045AE7B02EE}.Design|x86.Build.0 = Debug|Any CPU
+		{CFF3E599-A22A-4A37-B5B0-2045AE7B02EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFF3E599-A22A-4A37-B5B0-2045AE7B02EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFF3E599-A22A-4A37-B5B0-2045AE7B02EE}.Release|x86.ActiveCfg = Release|Any CPU
+		{CFF3E599-A22A-4A37-B5B0-2045AE7B02EE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\TransientFaultHandling.Core.5.1.1209.1\lib\NET4;packages\Unity.2.1.505.2\lib\NET35
+		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8
 	EndGlobalSection
 EndGlobal
