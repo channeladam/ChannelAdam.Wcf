@@ -122,7 +122,7 @@ namespace ChannelAdam.ServiceModel.Internal
             var method = serviceOperationExpression.Body as MethodCallExpression;
             if (method == null)
             {
-                throw new ArgumentException("Argument must be a System.Linq.Expressions.MethodCallExpression", "serviceOperationExpression");
+                throw new ArgumentException("Argument must be a System.Linq.Expressions.MethodCallExpression", nameof(serviceOperationExpression));
             }
 
             return method;

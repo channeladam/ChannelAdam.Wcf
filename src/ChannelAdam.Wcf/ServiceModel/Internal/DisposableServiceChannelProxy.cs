@@ -145,11 +145,11 @@ namespace ChannelAdam.ServiceModel.Internal
 
                 if (value == null)
                 {
-                    base.DestructorExceptionBehaviour = null;
+                    this.DestructorExceptionBehaviour = null;
                 }
                 else
                 {
-                    base.DestructorExceptionBehaviour = value.PerformDestructorExceptionBehaviour;
+                    this.DestructorExceptionBehaviour = value.PerformDestructorExceptionBehaviour;
                 }
             }
         }

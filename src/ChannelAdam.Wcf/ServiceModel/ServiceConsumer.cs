@@ -68,7 +68,7 @@ namespace ChannelAdam.ServiceModel
         public ServiceConsumer(RetryEnabledDisposableServiceChannelProxy<TServiceInterface> retryEnabledDisposableServiceChannelProxy)
         {
             this.retryEnabledDisposableChannelProxy = retryEnabledDisposableServiceChannelProxy;
-            this.operations = (TServiceInterface)retryEnabledDisposableChannelProxy.GetTransparentProxy();
+            this.operations = (TServiceInterface)retryEnabledDisposableServiceChannelProxy.GetTransparentProxy();
         }
 
         #endregion
@@ -94,11 +94,11 @@ namespace ChannelAdam.ServiceModel
 
                 if (value == null)
                 {
-                    base.DestructorExceptionBehaviour = null;
+                    this.DestructorExceptionBehaviour = null;
                 }
                 else
                 {
-                    base.DestructorExceptionBehaviour = value.PerformDestructorExceptionBehaviour;
+                    this.DestructorExceptionBehaviour = value.PerformDestructorExceptionBehaviour;
                 }
             }
         }

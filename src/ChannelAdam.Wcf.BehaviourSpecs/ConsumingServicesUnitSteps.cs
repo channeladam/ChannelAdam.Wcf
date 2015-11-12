@@ -39,6 +39,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
     using Microsoft.Practices.Unity;
     using Autofac;
     using Microsoft.Practices.TransientFaultHandling;
+    using SimpleInjector.Diagnostics;
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable"), Binding]
     [Scope(Feature = "Consuming Services")]
@@ -146,7 +147,10 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
         {
             this.simpleContainer = new SimpleInjector.Container();
 
-            this.simpleContainer.Register(() => ServiceConsumerFactory.Create<IFakeService>("BasicHttpBinding_IFakeService"), SimpleInjector.Lifestyle.Transient);
+            this.simpleContainer.Register(
+                () => ServiceConsumerFactory.Create<IFakeService>("BasicHttpBinding_IFakeService"), SimpleInjector.Lifestyle.Transient);
+            var registration = this.simpleContainer.GetRegistration(typeof(IServiceConsumer<IFakeService>)).Registration;
+            registration.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "intended to be disposed by this application's code");
 
             this.simpleContainer.Verify();
         }

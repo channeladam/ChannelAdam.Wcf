@@ -25,8 +25,9 @@ namespace ChannelAdam.ServiceModel.Internal
     using ChannelAdam.TransientFaultHandling;
 
     /// <summary>
-    /// Proxies a <see cref="DisposableServiceChannelProxy"/> to provide retry capability.
+    /// Proxies a <see cref="DisposableServiceChannelProxy" /> to provide retry capability.
     /// </summary>
+    /// <typeparam name="TServiceInterface">The type of the service interface.</typeparam>
     [SecurityCritical]
     public class RetryEnabledDisposableServiceChannelProxy<TServiceInterface>
         : DisposableObjectRealProxy, IServiceChannelProxy
@@ -47,7 +48,7 @@ namespace ChannelAdam.ServiceModel.Internal
         #region Constructor
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RetryEnabledDisposableServiceChannelProxy"/> class.
+        /// Initializes a new instance of the <see cref="RetryEnabledDisposableServiceChannelProxy{TServiceInterface}" /> class.
         /// </summary>
         /// <param name="serviceChannelFactoryMethod">The service channel factory method.</param>
         public RetryEnabledDisposableServiceChannelProxy(Func<ICommunicationObject> serviceChannelFactoryMethod)
@@ -56,7 +57,7 @@ namespace ChannelAdam.ServiceModel.Internal
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RetryEnabledDisposableServiceChannelProxy" /> class.
+        /// Initializes a new instance of the <see cref="RetryEnabledDisposableServiceChannelProxy{TServiceInterface}" /> class.
         /// </summary>
         /// <param name="serviceChannelFactoryMethod">The service channel factory method.</param>
         /// <param name="retryPolicy">The retry policy.</param>
@@ -69,7 +70,7 @@ namespace ChannelAdam.ServiceModel.Internal
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RetryEnabledDisposableServiceChannelProxy" /> class.
+        /// Initializes a new instance of the <see cref="RetryEnabledDisposableServiceChannelProxy{TServiceInterface}" /> class.
         /// </summary>
         /// <param name="disposableServiceChannelProxyFactoryMethod">The disposable service channel proxy factory method.</param>
         /// <param name="serviceChannelFactoryMethod">The service channel factory method.</param>
@@ -109,11 +110,11 @@ namespace ChannelAdam.ServiceModel.Internal
 
                 if (value == null)
                 {
-                    base.DestructorExceptionBehaviour = null;
+                    this.DestructorExceptionBehaviour = null;
                 }
                 else
                 {
-                    base.DestructorExceptionBehaviour = value.PerformDestructorExceptionBehaviour;
+                    this.DestructorExceptionBehaviour = value.PerformDestructorExceptionBehaviour;
                 }
 
                 this.InitialiseExceptionStrategyInDisposableChannelProxy();
@@ -264,7 +265,10 @@ namespace ChannelAdam.ServiceModel.Internal
 
         protected virtual void OnRetryPolicyAttemptException(Exception ex, int attempt)
         {
-            this.ExceptionBehaviourStrategy?.PerformRetryPolicyAttemptExceptionBehaviour(ex, attempt);
+            if (this.ExceptionBehaviourStrategy != null)
+            {
+                this.ExceptionBehaviourStrategy.PerformRetryPolicyAttemptExceptionBehaviour(ex, attempt);
+            }
         }
 
         #endregion
@@ -275,7 +279,7 @@ namespace ChannelAdam.ServiceModel.Internal
         {
             Exception rootCauseException = null;
 
-            ReturnMessage returnMessage = result as ReturnMessage;
+            var returnMessage = result as ReturnMessage;
             if (returnMessage != null && returnMessage.Exception != null)
             {
                 rootCauseException = returnMessage.Exception.GetBaseException();

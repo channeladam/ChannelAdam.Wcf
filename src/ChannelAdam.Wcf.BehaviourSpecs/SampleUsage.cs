@@ -18,14 +18,8 @@
 namespace ChannelAdam.Wcf.BehaviourSpecs
 {
     using System;
-    using System.Collections;
     using System.ServiceModel;
-    using System.Threading;
-
-    using ChannelAdam;
     using ChannelAdam.ServiceModel;
-    using ChannelAdam.ServiceModel.Internal;
-    using ChannelAdam.Wcf.BehaviourSpecs.SampleServiceReference;
     using ChannelAdam.Wcf.BehaviourSpecs.TestDoubles;
 
     using Microsoft.Practices.TransientFaultHandling;
@@ -93,7 +87,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
         }
 
         [TestMethod]
-        public void Sample_Level100_BasicUsage_CallMethod()
+        public void Sample_Level100_BasicUsage_ConsumeMethod()
         {
             using (var service = ServiceConsumerFactory.Create<IFakeService>(() => new FakeServiceClient()))
             {
@@ -224,7 +218,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
         }
 
         [TestMethod]
-        public void Sample3_Level300_AutomaticRetry_Manual_UsingOperationProperty()
+        public void Sample3_Level300_AutomaticRetry_Manual_Naive_UsingOperationProperty()
         {
             int retryCount = 1;
             Exception lastException = null;
@@ -263,20 +257,18 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
         }
 
         [TestMethod]
-        public void Sample3_Level300_AutomaticRetry_TransientFaultHandling_UsingOperationsProperty()
+        public void Sample3_Level300_AutomaticRetry_ManuallyUsingMicrosoftTransientFaultHandling_UsingOperationsProperty()
         {
-            Exception lastException;
-
             using (var service = ServiceConsumerFactory.Create<IFakeService>(() => new FakeServiceClient()))
             {
                 try
                 {
                     int actual = 0;
 
-                    var retryStrategy = new Incremental(5, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2));
-                    var retryPolicy = new RetryPolicy<SoapFaultWebServiceTransientErrorDetectionStrategy>(retryStrategy);
+                    var microsoftRetryStrategy = new Incremental(5, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2));
+                    var microsoftRetryPolicy = new RetryPolicy<SoapFaultWebServiceTransientErrorDetectionStrategy>(microsoftRetryStrategy);
 
-                    retryPolicy.ExecuteAction(() =>
+                    microsoftRetryPolicy.ExecuteAction(() =>
                     {
                         actual = service.Operations.AddIntegers(1, 1);
                     });
@@ -288,12 +280,10 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
                 }
                 catch (FaultException fe)
                 {
-                    lastException = fe;
                     Console.WriteLine("Service operation threw a fault: " + fe.ToString());
                 }
                 catch (Exception ex)
                 {
-                    lastException = ex;
                     Console.WriteLine("Technical error occurred while calling the service operation: " + ex.ToString());
                 }
 
@@ -302,12 +292,81 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
         }
 
         [TestMethod]
-        public void Sample3_Level300_AutomaticRetry_TransientFaultHandling_DefaultWithCallMethod()
+        public void Sample3_Level300_AutomaticRetry_StaticServiceConsumerRetryPolicy_UsingMicrosoftTransientFaultHandling_UsingOperationsProperty()
         {
-            var retryStrategy = new Incremental(5, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2));
-            var retryPolicy = new RetryPolicy<SoapFaultWebServiceTransientErrorDetectionStrategy>(retryStrategy).ForServiceConsumer();
+            var microsoftRetryStrategy = new Incremental(5, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2));
+            var microsoftRetryPolicy = new RetryPolicy<SoapFaultWebServiceTransientErrorDetectionStrategy>(microsoftRetryStrategy);
+            ServiceConsumerFactory.DefaultRetryPolicy = microsoftRetryPolicy.ForServiceConsumer(); // extension method
+            // or ServiceConsumerFactory.DefaultRetryPolicy = new ChannelAdam.TransientFaultHandling.RetryPolicyAdapter(microsoftRetryPolicy);
+            // or ServiceConsumerFactory.DefaultRetryPolicy = (ChannelAdam.TransientFaultHandling.IRetryPolicyFunction)microsoftRetryPolicy;
 
-            using (var service = ServiceConsumerFactory.Create<IFakeService>(() => new FakeServiceClient(), retryPolicy))
+            using (var service = ServiceConsumerFactory.Create<IFakeService>(() => new FakeServiceClient()))
+            {
+                try
+                {
+                    int actual = service.Operations.AddIntegers(1, 1);
+
+                    Console.WriteLine("Actual: " + actual);
+                    Assert.AreEqual(2, actual);
+
+                    return;
+                }
+                catch (FaultException fe)
+                {
+                    Console.WriteLine("Service operation threw a fault: " + fe.ToString());
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Technical error occurred while calling the service operation: " + ex.ToString());
+                }
+
+                Assert.Fail("Service operation was not successfully called");
+            }
+        }
+
+        [TestMethod]
+        public void Sample3_Level300_AutomaticRetry_ServiceConsumerRetryPolicy_UsingMicrosoftTransientFaultHandling_UsingOperationsProperty()
+        {
+            var microsoftRetryStrategy = new Incremental(5, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2));
+            var microsoftRetryPolicy = new RetryPolicy<SoapFaultWebServiceTransientErrorDetectionStrategy>(microsoftRetryStrategy);
+
+            var serviceConsumerRetryPolicy = microsoftRetryPolicy.ForServiceConsumer(); // extension method
+            // or var serviceConsumerRetryPolicy = new ChannelAdam.TransientFaultHandling.RetryPolicyAdapter(microsoftRetryPolicy);
+            // or var serviceConsumerRetryPolicy = (ChannelAdam.TransientFaultHandling.IRetryPolicyFunction)microsoftRetryPolicy;
+            using (var service = ServiceConsumerFactory.Create<IFakeService>(() => new FakeServiceClient(), serviceConsumerRetryPolicy))
+            {
+                try
+                {
+                    int actual = service.Operations.AddIntegers(1, 1);
+
+                    Console.WriteLine("Actual: " + actual);
+                    Assert.AreEqual(2, actual);
+
+                    return;
+                }
+                catch (FaultException fe)
+                {
+                    Console.WriteLine("Service operation threw a fault: " + fe.ToString());
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Technical error occurred while calling the service operation: " + ex.ToString());
+                }
+
+                Assert.Fail("Service operation was not successfully called");
+            }
+        }
+
+        [TestMethod]
+        public void Sample3_Level300_AutomaticRetry_StaticServiceConsumerRetryPolicy_UsingMicrosoftTransientFaultHandling_WithConsumeMethod()
+        {
+            var microsoftRetryStrategy = new Incremental(5, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2));
+            var microsoftRetryPolicy = new RetryPolicy<SoapFaultWebServiceTransientErrorDetectionStrategy>(microsoftRetryStrategy);
+            ServiceConsumerFactory.DefaultRetryPolicy = microsoftRetryPolicy.ForServiceConsumer(); // extension method
+            // or ServiceConsumerFactory.DefaultRetryPolicy = new ChannelAdam.TransientFaultHandling.RetryPolicyAdapter(microsoftRetryPolicy);
+            // or ServiceConsumerFactory.DefaultRetryPolicy = (ChannelAdam.TransientFaultHandling.IRetryPolicyFunction)microsoftRetryPolicy;
+
+            using (var service = ServiceConsumerFactory.Create<IFakeService>(() => new FakeServiceClient()))
             {
                 var result = service.Consume(operation => operation.AddIntegers(1, 1));
 
@@ -331,36 +390,5 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
                 }
             }
         }
-
-        //[TestMethod]
-        //public void Sample3_Level300_AutomaticRetry_TransientFaultHandling_OnCallMethod()
-        //{
-        //    using (var service = ServiceConsumerFactory.Create<IFakeService>(() => new FakeServiceClient()))
-        //    {
-        //        var retryStrategy = new Incremental(5, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2));
-        //        var retryPolicy = new RetryPolicy<SoapFaultWebServiceTransientErrorDetectionStrategy>(retryStrategy);
-
-        //        var result = service.Consume(operation => operation.AddIntegers(1, 1), retryPolicy);
-
-        //        if (result.HasNoException)
-        //        {
-        //            Console.WriteLine("Actual: " + result.Value);
-        //            Assert.AreEqual(2, result.Value);
-        //        }
-        //        else
-        //        {
-        //            if (result.HasFaultException)
-        //            {
-        //                Console.WriteLine("Service operation threw a fault: " + result.Exception.ToString());
-        //            }
-        //            else if (result.HasException)
-        //            {
-        //                Console.WriteLine("Technical error occurred while calling the service operation: " + result.Exception.ToString());
-        //            }
-
-        //            Assert.Fail("Service operation was not successfully called");
-        //        }
-        //    }
-        //}
     }
 }

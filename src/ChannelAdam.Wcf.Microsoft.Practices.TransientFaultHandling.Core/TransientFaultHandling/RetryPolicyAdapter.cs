@@ -17,8 +17,8 @@
 
 namespace ChannelAdam.TransientFaultHandling
 {
-    using Microsoft.Practices.TransientFaultHandling;
     using System;
+    using Microsoft.Practices.TransientFaultHandling;
 
     /// <summary>
     /// An adapter for the Microsoft Transient Fault Handling Core <see cref="RetryPolicy"/>.
@@ -29,6 +29,10 @@ namespace ChannelAdam.TransientFaultHandling
 
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RetryPolicyAdapter"/> class.
+        /// </summary>
+        /// <param name="retryPolicy">The retry policy.</param>
         public RetryPolicyAdapter(RetryPolicy retryPolicy)
         {
             this.retryPolicy = retryPolicy;
@@ -38,6 +42,11 @@ namespace ChannelAdam.TransientFaultHandling
 
         #region Public Static Methods
 
+        /// <summary>
+        /// Creates an adapter from a Microsoft Practices <see cref="RetryPolicy"/>.
+        /// </summary>
+        /// <param name="retryPolicy">The retry policy.</param>
+        /// <returns>A <see cref="RetryPolicyAdapter"/>.</returns>
         public static RetryPolicyAdapter CreateFrom(RetryPolicy retryPolicy)
         {
             return new RetryPolicyAdapter(retryPolicy);
@@ -61,6 +70,12 @@ namespace ChannelAdam.TransientFaultHandling
 
         #endregion Operators
 
+        /// <summary>
+        /// Executes the specified function.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="func">The function.</param>
+        /// <returns>The result of the function.</returns>
         public TResult Execute<TResult>(Func<TResult> func)
         {
             if (this.retryPolicy != null)

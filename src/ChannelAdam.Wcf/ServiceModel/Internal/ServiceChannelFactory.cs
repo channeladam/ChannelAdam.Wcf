@@ -61,17 +61,17 @@ namespace ChannelAdam.ServiceModel.Internal
         {
             if (serviceInterface == null)
             {
-                throw new ArgumentNullException("serviceInterface");
+                throw new ArgumentNullException(nameof(serviceInterface));
             }
 
             if (!serviceInterface.IsInterface)
             {
-                throw new ArgumentException(string.Format("Type '{0}' is not an interface.", serviceInterface.FullName), "serviceInterface");
+                throw new ArgumentException(string.Format("Type '{0}' is not an interface.", serviceInterface.FullName), nameof(serviceInterface));
             }
 
             if (string.IsNullOrWhiteSpace(endpointConfigurationName))
             {
-                throw new ArgumentNullException("endpointConfigurationName");
+                throw new ArgumentNullException(nameof(endpointConfigurationName));
             }
 
             var channelFactoryType = typeof(ChannelFactory<>).MakeGenericType(serviceInterface);
