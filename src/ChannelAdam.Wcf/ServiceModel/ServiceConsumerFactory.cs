@@ -35,7 +35,7 @@ namespace ChannelAdam.ServiceModel
         #region Public Static Properties
 
         /// <summary>
-        /// Gets or sets the default retry policy, used only with the <c>Call</c> method, and NOT if you call a service operation directly through the <c>Operations</c> property.
+        /// Gets or sets the default retry policy.
         /// </summary>
         /// <value>
         /// The default retry policy.
