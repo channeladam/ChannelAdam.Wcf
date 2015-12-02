@@ -109,8 +109,9 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
         {
             this.unityContainer = new UnityContainer();
 
-            this.unityContainer
+            // this.unityContainer.RegisterInstance<IRetryPolicyFunction>(new NullRetryPolicyFunction());
 
+            this.unityContainer
                 .RegisterType<IServiceConsumer<IFakeService>>(
                     new TransientLifetimeManager(),
                     new InjectionFactory(c => ServiceConsumerFactory.Create<IFakeService>("BasicHttpBinding_IFakeService")))
@@ -128,6 +129,10 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
                         ServiceConsumerFactory.Create<IFakeService>(() => (ICommunicationObject)c.Resolve<IFakeService>())))
                 ;
 
+            this.unityContainer.RegisterTypes(
+                AllClasses.FromLoadedAssemblies().Where(t => t.Namespace != typeof(IServiceConsumer<>).Namespace),
+                WithMappings.FromMatchingInterface,
+                WithName.Default);
         }
 
         [Given(@"a configured Autofac IoC container")]
