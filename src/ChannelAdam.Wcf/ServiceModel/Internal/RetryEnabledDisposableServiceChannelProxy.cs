@@ -75,6 +75,7 @@ namespace ChannelAdam.ServiceModel.Internal
         /// <param name="disposableServiceChannelProxyFactoryMethod">The disposable service channel proxy factory method.</param>
         /// <param name="serviceChannelFactoryMethod">The service channel factory method.</param>
         /// <param name="retryPolicy">The retry policy.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "As designed.")]
         public RetryEnabledDisposableServiceChannelProxy(
             Func<ICommunicationObject, DisposableServiceChannelProxy<TServiceInterface>> disposableServiceChannelProxyFactoryMethod,
             Func<ICommunicationObject> serviceChannelFactoryMethod,

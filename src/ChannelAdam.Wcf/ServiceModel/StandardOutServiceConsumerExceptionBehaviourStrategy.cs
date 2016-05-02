@@ -119,6 +119,7 @@ namespace ChannelAdam.ServiceModel
         /// </summary>
         /// <param name="exception">The exception.</param>
         /// <param name="attemptCount">The attempt count. One is the first attempt, not the first retry.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Justification = "Catered for.")]
         public void PerformRetryPolicyAttemptExceptionBehaviour(Exception exception, int attemptCount)
         {
             Console.Out.WriteLine($"RetryPolicy Attempt {attemptCount}:" + exception == null ? NullPhrase : exception.ToString());
