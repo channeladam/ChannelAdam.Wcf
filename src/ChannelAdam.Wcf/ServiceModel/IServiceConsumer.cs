@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
 // <copyright file="IServiceConsumer.cs">
-//     Copyright (c) 2014 Adam Craven. All rights reserved.
+//     Copyright (c) 2014-2016 Adam Craven. All rights reserved.
 // </copyright>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,8 @@ namespace ChannelAdam.ServiceModel
 {
     using System;
     using System.Linq.Expressions;
+    using System.Threading.Tasks;
+
     using ChannelAdam.TransientFaultHandling;
 
     /// <summary>
@@ -77,7 +79,7 @@ namespace ChannelAdam.ServiceModel
         /// </summary>
         /// <param name="serviceOperationExpression">The service operation expression.</param>
         /// <returns>
-        /// An <see cref="OperationResult" />.
+        /// An <see cref="IOperationResult" />.
         /// </returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This rule was created before Expressions.")]
         IOperationResult Consume(Expression<Action<TServiceInterface>> serviceOperationExpression);
@@ -88,10 +90,34 @@ namespace ChannelAdam.ServiceModel
         /// <typeparam name="TReturnValue">The type of the return value.</typeparam>
         /// <param name="serviceOperationExpression">The service operation expression.</param>
         /// <returns>
-        /// An <see cref="OperationResult{TReturnValue}" /> with the return type specified by the method within the expression.
+        /// An <see cref="IOperationResult{TReturnValue}" /> with the return type specified by the method within the expression.
         /// </returns>
+        /// <remarks>
+        /// If the expression returns a Task, then the Task is executed immediately/synchronously before we return to the caller.
+        /// </remarks>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This rule was created before Expressions.")]
         IOperationResult<TReturnValue> Consume<TReturnValue>(Expression<Func<TServiceInterface, TReturnValue>> serviceOperationExpression);
+
+        /// <summary>
+        /// Consumes the specified one-way service operation asynchronously, using the default retry policy.
+        /// </summary>
+        /// <param name="serviceOperationExpression">The service operation expression.</param>
+        /// <returns>
+        /// A <see cref="Task{IOperationResult}" />.
+        /// </returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This rule was created before Expressions.")]
+        Task<IOperationResult> ConsumeAsync(Expression<Func<TServiceInterface, Task>> serviceOperationExpression);
+
+        /// <summary>
+        /// Consumes the specified service operation, using the default retry policy.
+        /// </summary>
+        /// <typeparam name="TReturnValue">The type of the return value.</typeparam>
+        /// <param name="serviceOperationExpression">The service operation expression.</param>
+        /// <returns>
+        /// An <see cref="IOperationResult{Task{TReturnValue}}" /> with the return type specified by the method within the expression.
+        /// </returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This rule was created before Expressions.")]
+        Task<IOperationResult<TReturnValue>> ConsumeAsync<TReturnValue>(Expression<Func<TServiceInterface, Task<TReturnValue>>> serviceOperationExpression);
 
         /// <summary>
         /// Closes the service channel.

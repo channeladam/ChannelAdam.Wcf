@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="ConsumingServicesUnitSteps.cs">
-//     Copyright (c) 2014-2015 Adam Craven. All rights reserved.
+//     Copyright (c) 2014-2016 Adam Craven. All rights reserved.
 // </copyright>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,6 +51,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
         WeakReference<ServiceConsumer<IFakeService>> weakRefServiceConsumer = null;
         int actualResult = 0;
         int expectedResult = 0;
+        IOperationResult actualOperationResult = null;
         Mock<IFakeService> mockService;
         DisposableServiceChannelProxy<IFakeService> disposableServiceChannelProxy;
         Mock<IServiceConsumerExceptionBehaviourStrategy> mockExceptionStrategy;
@@ -112,9 +113,9 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
             // this.unityContainer.RegisterInstance<IRetryPolicyFunction>(new NullRetryPolicyFunction());
 
             this.unityContainer
-                .RegisterType<IServiceConsumer<IFakeService>>(
-                    new TransientLifetimeManager(),
-                    new InjectionFactory(c => ServiceConsumerFactory.Create<IFakeService>("BasicHttpBinding_IFakeService")))
+                //.RegisterType<IServiceConsumer<IFakeService>>(
+                //    new TransientLifetimeManager(),
+                //    new InjectionFactory(c => ServiceConsumerFactory.Create<IFakeService>("BasicHttpBinding_IFakeService")))
                 //
                 // OR
                 //
@@ -124,6 +125,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
                 // OR more 'correctly'
                 //
                 .RegisterType<IFakeService, FakeServiceClient>(new TransientLifetimeManager())
+
                 .RegisterType<IServiceConsumer<IFakeService>>(
                     new InjectionFactory(c =>
                         ServiceConsumerFactory.Create<IFakeService>(() => (ICommunicationObject)c.Resolve<IFakeService>())))
@@ -164,10 +166,16 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
         public void GivenAServiceConsumerIsCreatedWithAnOperationThatThrowsAException(string typeOfException)
         {
             InitialiseFactoryMethodsAndMockServiceAndDisposableProxyWithEvents();
-
-            SetupMockServiceToThrowException(typeOfException);
-
             CreateServiceConsumerWithMocks();
+            SetupMockTwoWayServiceOperationToThrowException(typeOfException);
+        }
+
+        [Given(@"a service consumer is created with an asynchronous two-way task operation that throws a '(.*)' exception")]
+        public void GivenAServiceConsumerIsCreatedWithAnAsynchronousTwoWayTaskOperationThatThrowsAException(string typeOfException)
+        {
+            SetupMockServiceAndChannelFactories();
+            CreateServiceConsumerWithMocks();
+            SetupMockAsynchronousTwoWayTaskServiceOperationToThrowException(typeOfException);
         }
 
         [Given(@"the service consumer has a default retry policy")]
@@ -183,11 +191,12 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
         {
             GivenTheServiceConsumerHasADefaultRetryPolicy();
             CreateAndSetupMockExceptionStrategy("retry");
+
             this.serviceConsumer.ExceptionBehaviourStrategy = this.mockExceptionStrategy.Object;
         }
 
-        [Given(@"the service consumer has a custom service channel close trigger strategy that does not ever trigger the closing of the service channnel")]
-        public void GivenTheServiceConsumerHasACustomServiceChannelCloseTriggerStrategyThatDoesNotEverTriggerTheClosingOfTheServiceChannnel()
+        [Given(@"the service consumer has a custom service channel close trigger strategy that does not ever trigger the closing of the service channel")]
+        public void GivenTheServiceConsumerHasACustomServiceChannelCloseTriggerStrategyThatDoesNotEverTriggerTheClosingOfTheServiceChannel()
         {
             this.serviceConsumer.ChannelCloseTriggerStrategy = new NullServiceChannelCloseTriggerStrategy();
         }
@@ -259,7 +268,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
         {
             InitialiseFactoryMethodsAndMockServiceAndDisposableProxyWithEvents();
 
-            SetupMockServiceToThrowException(typeOfException);
+            SetupMockTwoWayServiceOperationToThrowException(typeOfException);
 
             CreateAndSetupMockExceptionStrategy(typeOfException);
             CreateServiceConsumerWithMocksAndExceptionStrategy();
@@ -274,6 +283,34 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
 
             CreateAndSetupMockExceptionStrategyForClosing(typeOfException);
             CreateServiceConsumerWithMocksAndExceptionStrategy();
+        }
+
+        [Given(@"a one-way service operation will be invoked")]
+        public void GivenAOneWayServiceOperationWillBeInvoked()
+        {
+            SetupMockServiceAndChannelFactories();
+
+            var mockSetup = this.mockService.Setup(m => m.DoOneWayStuff());
+            mockSetup.Callback(() =>
+            {
+                this.operationCallCount++;
+                Logger.Log("################# DoOneWayStuff() was called");
+            });
+
+            var asyncMockSetup = this.mockService.Setup(m => m.DoOneWayStuffAsync());
+            asyncMockSetup.Returns(() =>
+            {
+                this.operationCallCount++;
+                Logger.Log("################# DoOneWayStuffAsync() was called");
+                return Task.FromResult(1);
+            });
+        }
+
+        [Given(@"an asynchronous one-way task service operation will be invoked and throw a '(.*)' exception")]
+        public void GivenAnAsynchronousOneWayTaskServiceOperationWillBeInvokedAndThrowAException(string typeOfException)
+        {
+            SetupMockServiceAndChannelFactories();
+            SetupMockAsynchronousOneWayTaskServiceOperationToThrowException(typeOfException);
         }
 
         [Given(@"a service consumer that will throw an exception while aborting, and has a corresponding exception behaviour")]
@@ -362,18 +399,77 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
             var ops = this.serviceConsumer.Operations.ToString();
         }
 
-        [When(@"an operation is invoked synchronously")]
-        public void WhenAnOperationIsInvokedSynchronously()
+        [When(@"a synchronous one-way operation is invoked via the operations property")]
+        public void WhenASynchronousOneWayOperationIsInvokedViaOperationsProperty()
+        {
+            this.serviceConsumer.Operations.DoOneWayStuff();
+        }
+
+        [When(@"an asynchronous one-way task operation is invoked via the operations property")]
+        public void WhenAnAsynchronousOneWayTaskOperationIsInvokedViaOperationsProperty()
+        {
+            this.serviceConsumer.Operations.DoOneWayStuffAsync()
+                .Wait();  // SpecFlow v2 still does not support async Task methods and await
+        }
+
+        [When(@"a synchronous two-way operation is invoked via the operations property")]
+        public void WhenASynchronousTwoWayOperationIsInvokedViaOperationsProperty()
         {
             expectedResult = 3;
             actualResult = this.serviceConsumer.Operations.AddIntegers(1, 2);
         }
 
-        [When(@"an operation is invoked asynchronously")]
-        public async void WhenAnOperationIsInvokedAsynchronously()
+        [When(@"an asynchronous two-way task operation is invoked via the operations property")]
+        public void WhenAnAsynchronousTwoWayTaskOperationIsInvokedViaOperationsProperty()
         {
             expectedResult = 3;
-            actualResult = await this.serviceConsumer.Operations.AddTwoIntegersAsync(1, 2);
+            actualResult = this.serviceConsumer.Operations.AddTwoIntegersAsync(1, 2).Result; // SpecFlow v2 still does not support async Task methods and await
+        }
+
+        [When(@"a synchronous one-way operation is invoked via the Consume method")]
+        public void WhenASynchronousOneWayOperationIsInvokedViaConsumeMethod()
+        {
+            this.actualOperationResult = this.serviceConsumer.Consume(m => m.DoOneWayStuff());
+        }
+
+        [When(@"an asynchronous one-way task operation is invoked synchronously via the Consume method")]
+        public void WhenAnAsynchronousOneWayTaskOperationIsInvokedSynchronouslyViaConsumeMethod()
+        {
+            this.actualOperationResult = this.serviceConsumer.Consume(m => m.DoOneWayStuffAsync());
+        }
+
+        [When(@"a synchronous two-way operation is invoked via the Consume method")]
+        public void WhenASynchronousTwoWayOperationIsInvokedViaConsumeMethod()
+        {
+            expectedResult = 3;
+            var opResult = this.serviceConsumer.Consume(m => m.AddIntegers(1, 2));
+            this.actualOperationResult = opResult;
+            actualResult = opResult.Value;
+        }
+
+        [When(@"an asynchronous two-way task operation is invoked synchronously via the Consume method")]
+        public void WhenAnAsynchronousTwoWayTaskOperationIsInvokedSynchronouslyViaConsumeMethod()
+        {
+            expectedResult = 3;
+            var opResult = this.serviceConsumer.Consume(m => m.AddTwoIntegersAsync(1, 2));
+            actualResult = opResult.Value == null ? 0 : opResult.Value.Result;
+            this.actualOperationResult = opResult;
+        }
+
+        [When(@"an asynchronous one-way task operation is invoked via the ConsumeAsync method")]
+        public void WhenAnAsynchronousOneWayTaskOperationIsInvokedViaTheConsumeAsyncMethod()
+        {
+            var task = this.serviceConsumer.ConsumeAsync(m => m.DoOneWayStuffAsync());
+            this.actualOperationResult = task.Result; // SpecFlow v2 still does not support async Task methods and await
+        }
+
+        [When(@"an asynchronous two-way task operation is invoked via the ConsumeAsync method")]
+        public void WhenAnAsynchronousTwoWayTaskOperationIsInvokedViaTheConsumeAsyncMethod()
+        {
+            expectedResult = 3;
+            var task = this.serviceConsumer.ConsumeAsync(m => m.AddTwoIntegersAsync(1, 2));
+            this.actualOperationResult = task.Result;  // SpecFlow v2 still does not support async Task methods and await;
+            actualResult = task.Result.Value;
         }
 
         [When(@"the operation is called via the Consume method and a '(.*)' exception occurs")]
@@ -414,7 +510,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
                 {
                     return this.serviceConsumer.Operations.AddIntegers(1, 2);
                 })
-                .GetAwaiter().GetResult();
+                .GetAwaiter().GetResult(); // Use GetAwaiter().GetResult() instead of Wait() because Wait() will wrap any exceptions inside an AggregateException
             });
         }
 
@@ -443,7 +539,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
                 {
                     this.serviceConsumer.Close();
                 })
-                .GetAwaiter().GetResult();
+                .GetAwaiter().GetResult(); // Use GetAwaiter().GetResult() instead of Wait() because Wait() will wrap any exceptions inside an AggregateException
             });
         }
 
@@ -508,10 +604,16 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
             LogAssert.IsNotNull("Constructor injected service instance", this.controller.FakeService);
         }
 
-        [Then(@"the operation was invoked")]
-        public void ThenTheOperationWasInvoked()
+        [Then(@"the two-way operation was invoked successfully")]
+        public void ThenTheTwoWayOperationWasInvokedSuccessfully()
         {
-            LogAssert.AreEqual("Operation was invoked", expectedResult, actualResult);
+            LogAssert.AreEqual("result of 2-way operation", expectedResult, actualResult);
+        }
+
+        [Then(@"the one-way operation was invoked")]
+        public void ThenTheOneWayOperationWasInvoked()
+        {
+            LogAssert.AreEqual("Operation call count", 1, this.operationCallCount);
         }
 
         [Then(@"the service channel was not closed or aborted, and remains open and usable")]
@@ -570,6 +672,13 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
             base.MyMockRepository.Verify();
         }
 
+        [Then(@"the operation result contains a '(.*)' exception")]
+        public void ThenTheOperationResultContainsAException(string typeOfException)
+        {
+            this.ActualException = this.actualOperationResult.Exception;
+            AssertExceptionWasThrown(typeOfException);
+        }
+
         [Then(@"a '(.*)' exception bubbled up to the calling code")]
         public void ThenAExceptionBubbledUpToTheCallingCode(string typeOfException)
         {
@@ -588,7 +697,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
             long memoryAfter = GC.GetTotalMemory(true);
             Console.WriteLine("Total memory after: " + memoryAfter);
 
-            Assert.IsTrue(memoryAfter - this.memoryBefore < 450*1024, "allowed variance was ~450kb - primarily for System.Configuration and testing libraries");
+            Assert.IsTrue(memoryAfter - this.memoryBefore < 450 * 1024, "allowed variance was ~450kb - primarily for System.Configuration and testing libraries");
         }
 
         [Then(@"the service consumer is explicitly closed")]
@@ -603,7 +712,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
 
         private void InitialiseFactoryMethodsAndMockServiceAndDisposableProxyWithEvents()
         {
-            this.mockService = MyMockRepository.Create<IFakeService>();
+            SetupMockServiceAndChannelFactories();
 
             this.mockService.Setup(m => m.AddIntegers(It.IsAny<int>(), It.IsAny<int>()))
                 .Callback(() =>
@@ -611,6 +720,11 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
                         this.operationCallCount++;
                         Logger.Log("************** AddIntegers(,) was called");
                     });
+        }
+
+        private void SetupMockServiceAndChannelFactories()
+        {
+            this.mockService = MyMockRepository.Create<IFakeService>();
 
             this.serviceChannelFactoryMethod = () =>
             {
@@ -650,15 +764,89 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
             return dsp;
         }
 
-        private void SetupMockServiceToThrowException(string typeOfException)
+        private void SetupMockTwoWayServiceOperationToThrowException(string typeOfException)
         {
             var mockSetup = this.mockService.Setup(m => m.AddIntegers(It.IsAny<int>(), It.IsAny<int>()));
             mockSetup.Callback(() =>
-                {
-                    this.operationCallCount++;
-                    Logger.Log("################# AddIntegers(,) was called");
-                });
+            {
+                this.operationCallCount++;
+                Logger.Log("################# AddIntegers(,) was called");
+            });
 
+            SetupThrowingOfException(typeOfException, mockSetup);
+        }
+
+        private void SetupMockAsynchronousTwoWayTaskServiceOperationToThrowException(string typeOfException)
+        {
+            var mockSetup = this.mockService.Setup(m => m.AddTwoIntegersAsync(It.IsAny<int>(), It.IsAny<int>()));
+            mockSetup.Callback(() =>
+            {
+                this.operationCallCount++;
+                Logger.Log("################# AddTwoIntegersAsync(,) was called");
+            });
+
+            SetupThrowingOfException(typeOfException, mockSetup);
+        }
+
+        private void SetupThrowingOfException<T>(string typeOfException, Moq.Language.Flow.ISetup<IFakeService, T> mockSetup)
+        {
+            switch (typeOfException)
+            {
+                case "fault":
+                    mockSetup.Throws<FaultException>().Verifiable();
+                    break;
+
+                case "communication":
+                    mockSetup.Throws<CommunicationException>().Verifiable();
+                    break;
+
+                case "timeout":
+                    mockSetup.Throws<TimeoutException>().Verifiable();
+                    break;
+
+                case "unexpected":
+                    mockSetup.Throws<ApplicationException>().Verifiable();
+                    break;
+
+                case "thread abort":
+                    mockSetup.Callback(() =>
+                    {
+                        Thread.CurrentThread.Abort();
+                    });
+                    break;
+
+                default:
+                    LogAssert.Fail("Unknown type of exception '{0}'", typeOfException);
+                    break;
+            }
+        }
+
+        private void SetupMockOneWayServiceOperationToThrowException(string typeOfException)
+        {
+            var mockSetup = this.mockService.Setup(m => m.DoOneWayStuff());
+            mockSetup.Callback(() =>
+            {
+                this.operationCallCount++;
+                Logger.Log("################# DoOneWayStuff was called");
+            });
+
+            SetupThrowingOfException(typeOfException, mockSetup);
+        }
+
+        private void SetupMockAsynchronousOneWayTaskServiceOperationToThrowException(string typeOfException)
+        {
+            var mockSetup = this.mockService.Setup(m => m.DoOneWayStuffAsync());
+            mockSetup.Callback(() =>
+            {
+                this.operationCallCount++;
+                Logger.Log("################# DoOneWayStuffAsync was called");
+            });
+
+            SetupThrowingOfException(typeOfException, mockSetup);
+        }
+
+        private void SetupThrowingOfException(string typeOfException, Moq.Language.Flow.ISetup<IFakeService> mockSetup)
+        {
             switch (typeOfException)
             {
                 case "fault":

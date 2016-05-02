@@ -28,6 +28,12 @@ namespace ChannelAdam.Wcf.BehaviourSpecs.TestDoubles
     public interface IFakeService
     {
         [OperationContract]
+        void DoOneWayStuff();
+
+        [OperationContract]
+        Task DoOneWayStuffAsync();
+
+        [OperationContract]
         int AddIntegers(int first, int second);
 
         [OperationContract]

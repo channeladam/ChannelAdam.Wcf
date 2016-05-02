@@ -29,6 +29,17 @@ namespace ChannelAdam.Wcf.BehaviourSpecs.TestDoubles
     /// </summary>
     public class FakeServiceClient : System.ServiceModel.ClientBase<IFakeService>, IFakeService
     {
+        public virtual void DoOneWayStuff()
+        {
+            // pretend to do something
+        }
+
+        public virtual Task DoOneWayStuffAsync()
+        {
+            // pretend to do stuff
+            return Task.FromResult(0);
+        }
+
         public virtual int AddIntegers(int first, int second)
         {
             // let's just pretend we called a service elsewhere - but don't tell anyone... ;)

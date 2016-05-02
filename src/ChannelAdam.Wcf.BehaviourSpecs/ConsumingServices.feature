@@ -38,21 +38,108 @@ When the service consumer is created with the Simple Injector IoC container
 Then the service consumer was created successfully
 
 
-### Invoking the service operation
+### Invoking the service operation - via the Operations property
 
 @UnitTest
-Scenario: ConsumingServices - 010 - Positive - Should successfully synchronously invoke a service operation on a service channel proxy
-Given a factory method to create a new service channel
+Scenario: ConsumingServices - 010a - Positive - Should successfully invoke a synchronous one-way service operation on a service channel proxy via the operations property
+Given a one-way service operation will be invoked
 When the service consumer is created with the factory method
-And an operation is invoked synchronously
-Then the operation was invoked
+And a synchronous one-way operation is invoked via the operations property
+Then the one-way operation was invoked
 
 @UnitTest
-Scenario: ConsumingServices - 011 - Positive - Should successfully asynchronously invoke a service operation on a service channel proxy
+Scenario: ConsumingServices - 010b - Positive - Should successfully invoke an asynchronous one-way task service operation on a service channel proxy via the operations property
+Given a one-way service operation will be invoked
+When the service consumer is created with the factory method
+And an asynchronous one-way task operation is invoked via the operations property
+Then the one-way operation was invoked
+
+@UnitTest
+Scenario: ConsumingServices - 010c - Positive - Should successfully invoke a synchronous two-way service operation on a service channel proxy via the operations property
 Given a factory method to create a new service channel
 When the service consumer is created with the factory method
-And an operation is invoked asynchronously
-Then the operation was invoked
+And a synchronous two-way operation is invoked via the operations property
+Then the two-way operation was invoked successfully
+
+@UnitTest
+Scenario: ConsumingServices - 010d - Positive - Should successfully invoke an asynchronous two-way task service operation on a service channel proxy via the operations property
+Given a factory method to create a new service channel
+When the service consumer is created with the factory method
+And an asynchronous two-way task operation is invoked via the operations property
+Then the two-way operation was invoked successfully
+
+### Invoking the service operation - via the Consume method
+
+@UnitTest
+Scenario: ConsumingServices - 011a - Positive - Should successfully synchronously invoke a synchronous one-way service operation on a service channel proxy via the Consume method
+Given a one-way service operation will be invoked
+When the service consumer is created with the factory method
+And a synchronous one-way operation is invoked via the Consume method
+Then the one-way operation was invoked
+
+@UnitTest
+Scenario: ConsumingServices - 011b - Positive - Should successfully synchronously invoke an asynchronous one-way task service operation on a service channel proxy via the Consume method
+Given a one-way service operation will be invoked
+When the service consumer is created with the factory method
+And an asynchronous one-way task operation is invoked synchronously via the Consume method
+Then the one-way operation was invoked
+
+@UnitTest
+Scenario: ConsumingServices - 011c - Positive - Should successfully synchronously invoke a synchronous two-way service operation on a service channel proxy via the Consume method
+Given a factory method to create a new service channel
+When the service consumer is created with the factory method
+And a synchronous two-way operation is invoked via the Consume method
+Then the two-way operation was invoked successfully
+
+@UnitTest
+Scenario: ConsumingServices - 011d - Positive - Should successfully synchronously invoke an asynchronous two-way task service operation on a service channel proxy via the Consume method
+Given a factory method to create a new service channel
+When the service consumer is created with the factory method
+And an asynchronous two-way task operation is invoked synchronously via the Consume method
+Then the two-way operation was invoked successfully
+
+@UnitTest
+Scenario: ConsumingServices - 011e - Positive - Should have FaultException and not an AggregateException when an exception occurs synchronously invoking an asynchronous one-way task service operation on a service channel proxy via the Consume method
+Given an asynchronous one-way task service operation will be invoked and throw a 'fault' exception
+When the service consumer is created with the factory method
+And an asynchronous one-way task operation is invoked synchronously via the Consume method
+Then the operation result contains a 'fault' exception
+
+@UnitTest
+Scenario: ConsumingServices - 011f - Positive - Should have FaultException and not an AggregateException when an exception occurs synchronously invoking an asynchronous two-way task service operation on a service channel proxy via the Consume method
+Given a service consumer is created with an asynchronous two-way task operation that throws a 'fault' exception
+When an asynchronous two-way task operation is invoked synchronously via the Consume method
+Then the operation result contains a 'fault' exception
+
+
+### Invoking the service operation - via the ConsumeAsync method
+
+@UnitTest
+Scenario: ConsumingServices - 012a - Positive - Should successfully asynchronously invoke an asynchronous one-way task service operation on a service channel proxy via the ConsumeAsync method
+Given a one-way service operation will be invoked
+When the service consumer is created with the factory method
+And an asynchronous one-way task operation is invoked via the ConsumeAsync method
+Then the one-way operation was invoked
+
+@UnitTest
+Scenario: ConsumingServices - 012b - Positive - Should successfully asynchronously invoke an asynchronous two-way task service operation on a service channel proxy via the ConsumeAsync method
+Given a factory method to create a new service channel
+When the service consumer is created with the factory method
+And an asynchronous two-way task operation is invoked via the ConsumeAsync method
+Then the two-way operation was invoked successfully
+
+@UnitTest
+Scenario: ConsumingServices - 012c - Positive - Should have FaultException and not an AggregateException when an exception occurs asynchronously invoking an asynchronous one-way task service operation on a service channel proxy via the ConsumeAsync method
+Given an asynchronous one-way task service operation will be invoked and throw a 'fault' exception
+When the service consumer is created with the factory method
+And an asynchronous one-way task operation is invoked via the ConsumeAsync method
+Then the operation result contains a 'fault' exception
+
+@UnitTest
+Scenario: ConsumingServices - 012d - Positive - Should have FaultException and not an AggregateException when an exception occurs asynchronously invoking an asynchronous two-way task service operation on a service channel proxy via the ConsumeAsync method
+Given a service consumer is created with an asynchronous two-way task operation that throws a 'fault' exception
+When an asynchronous two-way task operation is invoked via the ConsumeAsync method
+Then the operation result contains a 'fault' exception
 
 @UnitTest
 Scenario: ConsumingServices - 015 - Positive - Should by default keep the service channel open and reusable when a FaultException occurs while invoking a service operation
@@ -63,7 +150,7 @@ Then the service channel was not closed or aborted, and remains open and usable
 ### Retry Policy
 
 @UnitTest
-Scenario: ConsumingServices - 016 - Positive - Should use the default retry policy specified on the service consumer to perform retries with the Call method
+Scenario: ConsumingServices - 016 - Positive - Should use the default retry policy specified on the service consumer to perform retries with the Consume method
 Given a service consumer is created with an operation that throws a 'communication' exception
 And the service consumer has a default retry policy
 When the operation is called via the Consume method and a 'communication' exception occurs
@@ -106,7 +193,7 @@ Then the service channel was closed and disposed
 
 Scenario: ConsumingServices - 024 - Positive - Should have a customisable trigger strategy for when to close the service channel when any exception occurs while invoking a service operation
 Given a service consumer is created with an operation that throws a 'communication' exception
-And the service consumer has a custom service channel close trigger strategy that does not ever trigger the closing of the service channnel
+And the service consumer has a custom service channel close trigger strategy that does not ever trigger the closing of the service channel
 When the operation is called via the Consume method and a 'communication' exception occurs
 Then the service channel was not closed or aborted, and remains open and usable
 
@@ -234,4 +321,4 @@ Then there is no significant amount of memory loss
 #And the service consumer is created with the factory method
 #And the service consumer used the factory method to create a new service channel
 #When an operation is invoked synchronously
-#Then the operation was invoked
+#Then the two-way operation was invoked successfully

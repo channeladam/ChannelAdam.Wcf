@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------
 // <copyright file="ServiceConsumer.cs">
-//     Copyright (c) 2014-2015 Adam Craven. All rights reserved.
+//     Copyright (c) 2014-2016 Adam Craven. All rights reserved.
 // </copyright>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,10 +23,10 @@ namespace ChannelAdam.ServiceModel
     using System.Linq.Expressions;
     using System.Reflection;
     using System.ServiceModel;
+    using System.Threading.Tasks;
 
     using ChannelAdam.ServiceModel.Internal;
     using ChannelAdam.TransientFaultHandling;
-
     /// <summary>
     /// A class that correctly consumes a WCF service and handles the close/abort pattern.
     /// </summary>
@@ -164,7 +164,7 @@ namespace ChannelAdam.ServiceModel
         /// </summary>
         /// <param name="serviceOperationExpression">The service operation expression.</param>
         /// <returns>
-        /// An <see cref="OperationResult" />.
+        /// An <see cref="IOperationResult" />.
         /// </returns>
         public IOperationResult Consume(Expression<Action<TServiceInterface>> serviceOperationExpression)
         {
@@ -173,7 +173,6 @@ namespace ChannelAdam.ServiceModel
             try
             {
                 var expressionAdapter = ParseServiceOperationExpression(serviceOperationExpression);
-
                 this.ExecuteServiceOperation(expressionAdapter);
             }
             catch (Exception ex)
@@ -190,8 +189,11 @@ namespace ChannelAdam.ServiceModel
         /// <typeparam name="TReturnValue">The type of the return value.</typeparam>
         /// <param name="serviceOperationExpression">The service operation expression.</param>
         /// <returns>
-        /// An <see cref="OperationResult{TReturnValue}" /> with the return type specified by the method within the expression.
+        /// An <see cref="IOperationResult{TReturnValue}" /> with the return type specified by the method within the expression.
         /// </returns>
+        /// <remarks>
+        /// If the expression returns a Task, then the Task is executed immediately/synchronously before we return to the caller.
+        /// </remarks>
         public IOperationResult<TReturnValue> Consume<TReturnValue>(Expression<Func<TServiceInterface, TReturnValue>> serviceOperationExpression)
         {
             var result = new OperationResult<TReturnValue>();
@@ -199,8 +201,14 @@ namespace ChannelAdam.ServiceModel
             try
             {
                 var expressionAdapter = ParseServiceOperationExpression(serviceOperationExpression);
-
                 result.Value = (TReturnValue)this.ExecuteServiceOperation(expressionAdapter);
+
+                // Execute the task immediately/synchronously so that Consume() has control over the exception handling ;)
+                var resultTask = result.Value as Task;
+                if (resultTask != null)
+                {
+                    resultTask.GetAwaiter().GetResult(); // Use GetAwaiter().GetResult() instead of Wait() because Wait() will wrap any exceptions inside an AggregateException
+                }
             }
             catch (Exception ex)
             {
@@ -211,6 +219,79 @@ namespace ChannelAdam.ServiceModel
         }
 
         /// <summary>
+        /// Consumes the specified one-way service operation asynchronously, using the default retry policy.
+        /// </summary>
+        /// <param name="serviceOperationExpression">The service operation expression.</param>
+        /// <returns>
+        /// A <see cref="Task{IOperationResult}" />.
+        /// </returns>
+        public Task<IOperationResult> ConsumeAsync(Expression<Func<TServiceInterface, Task>> serviceOperationExpression)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                IOperationResult result = new OperationResult();
+
+                try
+                {
+                    var expressionAdapter = ParseServiceOperationExpression(serviceOperationExpression);
+                    var task = (Task)this.ExecuteServiceOperation(expressionAdapter);
+                    task.GetAwaiter().GetResult(); // Use GetAwaiter().GetResult() instead of Wait() because Wait() will wrap any exceptions inside an AggregateException
+                }
+                catch (AggregateException aex)    // Just in case, but this shouldn't happen ;)
+                {
+                    // If there is a Fault or exception thrown on the server,
+                    // then there should only be one inner/base exception - being the FaultException
+                    // Ditch the AggregateException for the base exception.
+                    result.Exception = aex.GetBaseException();
+                }
+                catch (Exception ex)
+                {
+                    result.Exception = ex;
+                }
+
+                return result;
+
+            }, TaskCreationOptions.AttachedToParent);
+        }
+
+        /// <summary>
+        /// Consumes the specified service operation asynchronously, using the default retry policy.
+        /// </summary>
+        /// <typeparam name="TReturnValue">The type of the return value.</typeparam>
+        /// <param name="serviceOperationExpression">The service operation expression.</param>
+        /// <returns>
+        /// A <see cref="Task{IOperationResult{TReturnValue}}" /> with the return type specified by the method within the expression.
+        /// </returns>
+        public Task<IOperationResult<TReturnValue>> ConsumeAsync<TReturnValue>(Expression<Func<TServiceInterface, Task<TReturnValue>>> serviceOperationExpression)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                IOperationResult<TReturnValue> result = new OperationResult<TReturnValue>();
+
+                try
+                {
+                    var expressionAdapter = ParseServiceOperationExpression(serviceOperationExpression);
+                    var task = (Task<TReturnValue>)this.ExecuteServiceOperation(expressionAdapter);
+                    result.Value = task.Result;
+                }
+                catch (AggregateException aex)    // Just in case, but this shouldn't happen ;)
+                {
+                    // If there is a Fault or exception thrown on the server,
+                    // then there should only be one inner/base exception - being the FaultException
+                    // Ditch the AggregateException for the base exception.
+                    result.Exception = aex.GetBaseException();
+                }
+                catch (Exception ex)
+                {
+                    result.Exception = ex;
+                }
+
+                return result;
+
+            }, TaskCreationOptions.AttachedToParent);
+        }
+
+        /// <summary>
         /// Closes the service channel.
         /// </summary>
         public void Close()
@@ -218,9 +299,9 @@ namespace ChannelAdam.ServiceModel
             this.retryEnabledDisposableChannelProxy.Close();
         }
 
-        #endregion
+#endregion
 
-        #region Dispose Pattern Implementation
+#region Dispose Pattern Implementation
 
         protected override void DisposeUnmanagedResources()
         {
@@ -229,9 +310,9 @@ namespace ChannelAdam.ServiceModel
             base.DisposeUnmanagedResources();
         }
 
-        #endregion
+#endregion
 
-        #region Static Private Methods
+#region Static Private Methods
 
         private static ServiceOperationExpressionAdapter<TServiceInterface> ParseServiceOperationExpression(Expression<Action<TServiceInterface>> serviceOperationExpression)
         {
@@ -259,9 +340,9 @@ namespace ChannelAdam.ServiceModel
             }
         }
 
-        #endregion
+#endregion
 
-        #region Private Methods
+#region Private Methods
 
         private void DisposeRetryEnabledDisposableChannelProxy()
         {
@@ -284,6 +365,6 @@ namespace ChannelAdam.ServiceModel
             return ExecuteServiceOperation(this.Operations, expressionAdapter.OperationMethodInfo, expressionAdapter.OperationMethodArguments);
         }
 
-        #endregion
+#endregion
     }
 }

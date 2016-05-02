@@ -10,6 +10,17 @@ namespace ChannelAdam.Wcf.BehaviourSpecs.TestDoubles
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
     public class FakeServiceImpl : IFakeService
     {
+        public void DoOneWayStuff()
+        {
+            // pretend to do stuff
+        }
+
+        public Task DoOneWayStuffAsync()
+        {
+            // pretend to do stuff
+            return Task.FromResult(0);
+        }
+
         public int AddIntegers(int first, int second)
         {
             return first + second;
