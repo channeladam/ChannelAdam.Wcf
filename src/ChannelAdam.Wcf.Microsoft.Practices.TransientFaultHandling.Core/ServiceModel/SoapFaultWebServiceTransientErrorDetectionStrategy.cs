@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="SoapFaultWebServiceTransientErrorDetectionStrategy.cs">
-//     Copyright (c) 2014-2015 Adam Craven. All rights reserved.
+//     Copyright (c) 2014-2016 Adam Craven. All rights reserved.
 // </copyright>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,8 +26,15 @@ namespace ChannelAdam.ServiceModel
     /// A transient error detection strategy for a SOAP-based web service - everything but a FaultException is a transient failure.
     /// </summary>
     /// <remarks>
-    /// This may not be very useful to the majority of users because probably want to a custom strategy checking for
+    /// <para>
+    /// If a FaultException occurs, it means that the service on the server threw an exception - as opposed to:
+    ///   - the service or server not being available, timing out, crashing, etc.
+    ///   - an exception that occurred somewhere on the client side.
+    /// </para>
+    /// <para>
+    /// This may not be very useful to the majority of users because they probably want to have a custom strategy checking for
     /// specific types of FaultException{Xyz} rather than any FaultException in general.
+    /// </para>
     /// </remarks>
     public class SoapFaultWebServiceTransientErrorDetectionStrategy : ITransientErrorDetectionStrategy
     {

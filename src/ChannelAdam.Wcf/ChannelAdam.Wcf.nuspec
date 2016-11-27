@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>ChannelAdam.Wcf</id>
-    <version>2.1.0</version>
+    <version>2.1.1</version>
     <title>ChannelAdam WCF Library</title>
     <authors>Adam Craven</authors>
     <owners>Adam Craven</owners>
@@ -12,6 +12,7 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Easily, reliably and correctly consume services using Microsoft's Windows Communication Foundation (WCF) library - including correctly performing the Close/Abort pattern and preventing memory and server connection leaks.</description>
     <releaseNotes>
+2.1.1 - Fixed issue with ConsumeAsync() and retries.
 2.1.0 - Added: ConsumeAsync() to cater for async Task methods (such as those on a generated service client).
 Fix: Consume() now synchronously executes a Task if one is returned from the service operation expression so it has control over any exceptions for correct behaviour with the Exception properties.
 2.0.0 - Breaking change - Retry policy is now also applied to the calls made via the Operations property. Removed dependency on Microsoft Transient Fault Handling Core library.

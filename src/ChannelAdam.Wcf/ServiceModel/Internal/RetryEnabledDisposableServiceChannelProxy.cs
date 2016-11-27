@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="RetryEnabledDisposableServiceChannelProxy.cs">
-//     Copyright (c) 2015 Adam Craven. All rights reserved.
+//     Copyright (c) 2015-2016 Adam Craven. All rights reserved.
 // </copyright>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,8 @@ namespace ChannelAdam.ServiceModel.Internal
     using System.Runtime.Remoting.Messaging;
     using System.Security;
     using System.ServiceModel;
+    using System.Threading.Tasks;
+
     using ChannelAdam.Runtime.Remoting.Proxies;
     using ChannelAdam.TransientFaultHandling;
 
@@ -289,6 +291,24 @@ namespace ChannelAdam.ServiceModel.Internal
             return rootCauseException;
         }
 
+        private static void WaitForReturnedTaskIfNecessary(IMessage innerResult)
+        {
+            var returnMessage = innerResult as ReturnMessage;
+            if (returnMessage != null)
+            {
+                var returnTask = returnMessage.ReturnValue as Task;
+                if (returnTask != null)
+                {
+                    // Wait for the task to complete - or more importantly, throw an exception that we might need to retry...
+#if NET40
+                    returnTask.Wait();
+#else
+                    returnTask.GetAwaiter().GetResult(); // Use GetAwaiter().GetResult() instead of Wait() because Wait() will wrap any exceptions inside an AggregateException
+#endif
+                }
+            }
+        }
+
         #endregion
 
         #region Private Methods
@@ -362,12 +382,21 @@ namespace ChannelAdam.ServiceModel.Internal
                     rootCauseException = null;
                     this.CreateDisposableChannelProxyIfNecessary();
 
-                    var innerResult = this.InvokeServiceOperation(msg, out rootCauseException);
+                    IMessage innerResult = null;
+                    try
+                    {
+                        innerResult = this.InvokeServiceOperation(msg, out rootCauseException);
+                        WaitForReturnedTaskIfNecessary(innerResult); // in case it throws an exception and should be retried
+                    }
+                    catch (Exception ex)
+                    {
+                        rootCauseException = ex.GetBaseException();
+                    }
 
                     if (rootCauseException != null)
                     {
                         OnRetryPolicyAttemptException(rootCauseException, attemptCount);
-                        throw rootCauseException;  // make the retry policy activate
+                        throw rootCauseException;  // make the retry policy activate & retry
                     }
 
                     return innerResult;

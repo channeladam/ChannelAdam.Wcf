@@ -12,16 +12,35 @@
   <wsdl:message name="ISampleService_SampleOperation_OutputMessage">
     <wsdl:part name="parameters" element="tns:SampleOperationResponse" />
   </wsdl:message>
+  <wsdl:message name="ISampleService_AddTwoIntegers_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddTwoIntegers" />
+  </wsdl:message>
+  <wsdl:message name="ISampleService_AddTwoIntegers_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddTwoIntegersResponse" />
+  </wsdl:message>
   <wsdl:portType name="ISampleService">
     <wsdl:operation name="SampleOperation">
       <wsdl:input wsaw:Action="http://tempuri.org/ISampleService/SampleOperation" message="tns:ISampleService_SampleOperation_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/ISampleService/SampleOperationResponse" message="tns:ISampleService_SampleOperation_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddTwoIntegers">
+      <wsdl:input wsaw:Action="http://tempuri.org/ISampleService/AddTwoIntegers" message="tns:ISampleService_AddTwoIntegers_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/ISampleService/AddTwoIntegersResponse" message="tns:ISampleService_AddTwoIntegers_OutputMessage" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="BasicHttpBinding_ISampleService" type="tns:ISampleService">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="SampleOperation">
       <soap:operation soapAction="http://tempuri.org/ISampleService/SampleOperation" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddTwoIntegers">
+      <soap:operation soapAction="http://tempuri.org/ISampleService/AddTwoIntegers" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

@@ -178,6 +178,14 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
             SetupMockAsynchronousTwoWayTaskServiceOperationToThrowException(typeOfException);
         }
 
+        [Given(@"a service consumer is created with an asynchronous two-way task operation that throws a '(.*)' exception in a retry scenario")]
+        public void GivenAServiceConsumerIsCreatedWithAnAsynchronousTwoWayTaskOperationThatThrowsAExceptionInARetryScenario(string typeOfException)
+        {
+            SetupMockServiceAndChannelFactories();
+            CreateServiceConsumerWithMocks();
+            SetupMockAsynchronousTwoWayTaskServiceOperationToThrowExceptionInARetryScenario(typeOfException);
+        }
+
         [Given(@"the service consumer has a default retry policy")]
         public void GivenTheServiceConsumerHasADefaultRetryPolicy()
         {
@@ -488,6 +496,36 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
             AssertExceptionWasThrown(typeOfException);
         }
 
+        [When(@"the operation that throws some exceptions to retry is called via the ConsumeAsync method and a '(.*)' exception occurs")]
+        public void WhenTheOperationIsCalledViaTheConsumeAsyncMethodAndAExceptionOccurs(string typeOfException)
+        {
+            var task = this.serviceConsumer.ConsumeAsync(op => op.AddTwoIntegersWithExceptionsToRetryAsync(1, 2));
+            var result = task.Result;    // SpecFlow v2 still does not support async Task methods and await;
+
+            if (result.HasNoException)
+            {
+                this.actualResult = result.Value;
+                LogAssert.Fail(typeOfException + " exception did not occur");
+            }
+
+            this.ActualException = result.Exception;
+
+            AssertExceptionWasThrown(typeOfException);
+        }
+
+        [When(@"the asynchronous operation that throws some exceptions to retry is called via the Operations property and a '(.*)' exception occurs")]
+        public void WhenTheAsynchronousOperationIsCalledViaTheOperationsPropertyAndAExceptionOccurs(string typeOfException)
+        {
+            base.Try(() =>
+            {
+                var task = this.serviceConsumer.Operations.AddTwoIntegersWithExceptionsToRetryAsync(1, 2);
+                this.actualResult = task.Result;        // SpecFlow v2 still does not support async Task methods and await;
+                LogAssert.Fail(typeOfException + " exception did not occur");
+            });
+
+            AssertExceptionWasThrown(typeOfException);
+        }
+
         [When(@"the operation is called and a '(.*)' exception occurs")]
         [When(@"the operation is called via the Operations property and a '(.*)' exception occurs")]
         public void WhenTheOperationIsCalledViaTheOperationsPropertyAndAExceptionOccurs(string typeOfException)
@@ -772,7 +810,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
                 this.operationCallCount++;
                 Logger.Log("################# AddIntegers(,) was called");
             });
-
+            mockSetup.Verifiable();
             SetupThrowingOfException(typeOfException, mockSetup);
         }
 
@@ -786,6 +824,50 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
             });
 
             SetupThrowingOfException(typeOfException, mockSetup);
+            mockSetup.Verifiable();
+        }
+
+        private void SetupMockAsynchronousTwoWayTaskServiceOperationToThrowExceptionInARetryScenario(string typeOfException)
+        {
+            var mockSetup = this.mockService.Setup(m => m.AddTwoIntegersWithExceptionsToRetryAsync(It.IsAny<int>(), It.IsAny<int>()));
+            mockSetup.Returns(() =>
+            {
+                this.operationCallCount++;
+                Logger.Log("################# AddTwoIntegersAsync(,) was called");
+
+                return (Task<int>)CreateAsyncTaskThrowingException(typeOfException);
+            });
+            mockSetup.Verifiable();
+        }
+
+        private Task CreateAsyncTaskThrowingException(string typeOfException)
+        {
+#pragma warning disable CS0162 // Unreachable code detected
+            switch (typeOfException)
+            {
+                case "fault":
+
+                    return Task.Run<int>( () => { Logger.Log("Throwing fault exception"); throw new FaultException(); return 0; });
+
+                case "communication":
+                    return Task.Run(() => { Logger.Log("Throwing communication exception"); throw new CommunicationException(); return 0; });
+
+                case "timeout":
+                    return Task.Run(() => { Logger.Log("Throwing timeout exception"); throw new TimeoutException(); return 0; });
+
+                case "unexpected":
+                    return Task.Run(() => { Logger.Log("Throwing unexpected exception"); throw new ApplicationException(); return 0; });
+
+                case "thread abort":
+                    return Task.Run(() => { Logger.Log("Aborting thread"); Thread.CurrentThread.Abort(); return 0; });
+
+                default:
+                    LogAssert.Fail("Unknown type of exception '{0}'", typeOfException);
+                    break;
+            }
+#pragma warning restore CS0162 // Unreachable code detected
+
+            return Task.FromResult(0);
         }
 
         private void SetupThrowingOfException<T>(string typeOfException, Moq.Language.Flow.ISetup<IFakeService, T> mockSetup)
@@ -1128,38 +1210,23 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
             switch (typeOfException)
             {
                 case "fault":
-                    if (this.ActualException is FaultException)
-                    {
-                        isExpected = true;
-                    }
+                    isExpected |= this.ActualException is FaultException;
                     break;
 
                 case "communication":
-                    if (this.ActualException is CommunicationException)
-                    {
-                        isExpected = true;
-                    }
+                    isExpected |= this.ActualException is CommunicationException;
                     break;
 
                 case "timeout":
-                    if (this.ActualException is TimeoutException)
-                    {
-                        isExpected = true;
-                    }
+                    isExpected |= this.ActualException is TimeoutException;
                     break;
 
                 case "unexpected":
-                    if (this.ActualException is ApplicationException)
-                    {
-                        isExpected = true;
-                    }
+                    isExpected |= this.ActualException is ApplicationException;
                     break;
 
                 case "thread abort":
-                    if (this.ActualException is System.Threading.ThreadAbortException)
-                    {
-                        isExpected = true;
-                    }
+                    isExpected |= this.ActualException is System.Threading.ThreadAbortException;
                     break;
 
                 default:
@@ -1169,11 +1236,11 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
 
             if (isExpected)
             {
-                Logger.Log("Expected '{0}' exception occurred - {1}", typeOfException, this.ActualException.ToString());
+                Logger.Log("Expected '{0}' exception occurred - {1}", typeOfException, this.ActualException);
             }
             else
             {
-                LogAssert.Fail("An exception occurred that was not expected: " + this.ActualException.ToString());
+                LogAssert.Fail("An exception occurred that was not expected: " + this.ActualException);
             }
         }
 

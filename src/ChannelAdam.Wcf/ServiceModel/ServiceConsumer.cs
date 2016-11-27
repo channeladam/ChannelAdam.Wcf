@@ -183,7 +183,7 @@ namespace ChannelAdam.ServiceModel
             }
             catch (Exception ex)
             {
-                result.Exception = ex;
+                result.Exception = ex.GetBaseException();
             }
 
             return result;
@@ -209,7 +209,8 @@ namespace ChannelAdam.ServiceModel
                 var expressionAdapter = ParseServiceOperationExpression(serviceOperationExpression);
                 result.Value = (TReturnValue)this.ExecuteServiceOperation(expressionAdapter);
 
-                // Execute the task immediately/synchronously so that Consume() has control over the exception handling ;)
+                // This is the Consume() method that executes things synchronously...
+                // So if the result happens to be a task, wait for it to complete so that Consume() can return any exception in the property IOperationResult.Exception.
                 var resultTask = result.Value as Task;
                 if (resultTask != null)
                 {
@@ -222,7 +223,7 @@ namespace ChannelAdam.ServiceModel
             }
             catch (Exception ex)
             {
-                result.Exception = ex;
+                result.Exception = ex.GetBaseException();
             }
 
             return result;
@@ -237,36 +238,31 @@ namespace ChannelAdam.ServiceModel
         /// </returns>
         public Task<IOperationResult> ConsumeAsync(Expression<Func<TServiceInterface, Task>> serviceOperationExpression)
         {
+            // We are about to explicitly wait and block for the result so we can return any exception in the property IOperationResult.Exception.
+            // That would not be asynchronous behaviour, so we start a new task to account for it.
             return Task.Factory.StartNew(
-                () =>
+            () =>
+            {
+                IOperationResult result = new OperationResult();
+
+                try
                 {
-                    IOperationResult result = new OperationResult();
-
-                    try
-                    {
-                        var expressionAdapter = ParseServiceOperationExpression(serviceOperationExpression);
-                        var task = (Task)this.ExecuteServiceOperation(expressionAdapter);
+                    var expressionAdapter = ParseServiceOperationExpression(serviceOperationExpression);
+                    var task = (Task)this.ExecuteServiceOperation(expressionAdapter);
 #if NET40
-                        task.Wait();
+                    task.Wait();
 #else
-                        task.GetAwaiter().GetResult(); // Use GetAwaiter().GetResult() instead of Wait() because Wait() will wrap any exceptions inside an AggregateException
+                    task.GetAwaiter().GetResult(); // Use GetAwaiter().GetResult() instead of Wait() because Wait() will wrap any exceptions inside an AggregateException
 #endif
-                    }
-                    catch (AggregateException aex)    // Just in case, but this shouldn't happen ;)
-                    {
-                        // If there is a Fault or exception thrown on the server,
-                        // then there should only be one inner/base exception - being the FaultException
-                        // Ditch the AggregateException for the base exception.
-                        result.Exception = aex.GetBaseException();
-                    }
-                    catch (Exception ex)
-                    {
-                        result.Exception = ex;
-                    }
+                }
+                catch (Exception ex)
+                {
+                    result.Exception = ex.GetBaseException();
+                }
 
-                    return result;
-                },
-                TaskCreationOptions.AttachedToParent);
+                return result;
+            },
+            TaskCreationOptions.AttachedToParent);
         }
 
         /// <summary>
@@ -279,32 +275,27 @@ namespace ChannelAdam.ServiceModel
         /// </returns>
         public Task<IOperationResult<TReturnValue>> ConsumeAsync<TReturnValue>(Expression<Func<TServiceInterface, Task<TReturnValue>>> serviceOperationExpression)
         {
+            // We are about to explicitly wait and block for the result so we can return any exception in the property IOperationResult.Exception and the result in IOperationResult.Value.
+            // That would not be asynchronous behaviour, so we start a new task to account for it.
             return Task.Factory.StartNew(
-                () =>
+            () =>
+            {
+                IOperationResult<TReturnValue> result = new OperationResult<TReturnValue>();
+
+                try
                 {
-                    IOperationResult<TReturnValue> result = new OperationResult<TReturnValue>();
+                    var expressionAdapter = ParseServiceOperationExpression(serviceOperationExpression);
+                    var task = (Task<TReturnValue>)this.ExecuteServiceOperation(expressionAdapter);
+                    result.Value = task.Result;
+                }
+                catch (Exception ex)
+                {
+                    result.Exception = ex.GetBaseException();
+                }
 
-                    try
-                    {
-                        var expressionAdapter = ParseServiceOperationExpression(serviceOperationExpression);
-                        var task = (Task<TReturnValue>)this.ExecuteServiceOperation(expressionAdapter);
-                        result.Value = task.Result;
-                    }
-                    catch (AggregateException aex)    // Just in case, but this shouldn't happen ;)
-                    {
-                        // If there is a Fault or exception thrown on the server,
-                        // then there should only be one inner/base exception - being the FaultException
-                        // Ditch the AggregateException for the base exception.
-                        result.Exception = aex.GetBaseException();
-                    }
-                    catch (Exception ex)
-                    {
-                        result.Exception = ex;
-                    }
-
-                    return result;
-                },
-                TaskCreationOptions.AttachedToParent);
+                return result;
+            },
+            TaskCreationOptions.AttachedToParent);
         }
 
         /// <summary>
@@ -326,9 +317,9 @@ namespace ChannelAdam.ServiceModel
             base.DisposeUnmanagedResources();
         }
 
-#endregion
+        #endregion
 
-#region Static Private Methods
+        #region Static Private Methods
 
         private static ServiceOperationExpressionAdapter<TServiceInterface> ParseServiceOperationExpression(Expression<Action<TServiceInterface>> serviceOperationExpression)
         {

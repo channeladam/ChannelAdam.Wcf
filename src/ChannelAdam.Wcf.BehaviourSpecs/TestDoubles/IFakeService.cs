@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="IFakeService.cs">
-//     Copyright (c) 2014 Adam Craven. All rights reserved.
+//     Copyright (c) 2014-2016 Adam Craven. All rights reserved.
 // </copyright>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,5 +38,8 @@ namespace ChannelAdam.Wcf.BehaviourSpecs.TestDoubles
 
         [OperationContract]
         Task<int> AddTwoIntegersAsync(int first, int second);
+
+        [OperationContract]
+        Task<int> AddTwoIntegersWithExceptionsToRetryAsync(int first, int second);
     }
 }

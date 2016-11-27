@@ -33,7 +33,7 @@
     <WarningLevel>4</WarningLevel>
     <StyleCopEnabled>False</StyleCopEnabled>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>ChannelAdam.Wcf.BehaviourSpecs.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -46,6 +46,7 @@
     <StyleCopEnabled>True</StyleCopEnabled>
     <StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
     <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>ChannelAdam.Wcf.BehaviourSpecs.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Autofac">
@@ -126,6 +127,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
+    <Compile Include="SpecFlowOutputPrettifier.cs" />
     <Compile Include="TestDoubles\ConstructorInjectedController.cs" />
     <Compile Include="TestDoubles\FakeExceptionHandlingStrategy.cs" />
     <Compile Include="TestDoubles\FakeServiceImpl.cs" />
@@ -139,6 +141,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="ChannelAdam.Wcf.BehaviourSpecs.ruleset" />
     <None Include="ConsumingServices.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ConsumingServices.feature.cs</LastGenOutput>

@@ -14,3 +14,8 @@
 /src/ChannelAdam.Wcf.BehaviourSpecs/ChannelAdam.Wcf.BehaviourSpecs.csproj.user
 /src/ChannelAdam.Wcf/bin/Release
 /src/ChannelAdam.Wcf/obj/Release
+/src/ChannelAdam.Wcf.Microsoft.Practices.TransientFaultHandling.Core/obj
+/src/ChannelAdam.Wcf.Microsoft.Practices.TransientFaultHandling.Core/bin
+/src/FSharpTestConsoleApplication/bin/Debug
+/src/FSharpTestConsoleApplication/obj/Debug
+/src/TestResults

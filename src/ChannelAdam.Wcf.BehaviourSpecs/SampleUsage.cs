@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="SampleUsage.cs">
-//     Copyright (c) 2014 Adam Craven. All rights reserved.
+//     Copyright (c) 2014-2016 Adam Craven. All rights reserved.
 // </copyright>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,8 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
 
     using Microsoft.Practices.TransientFaultHandling;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using System.Threading.Tasks;
+    using SampleServiceReference;
 
     /// <summary>
     /// Sample typical usage of the ServiceConsumer.
@@ -390,5 +392,59 @@ namespace ChannelAdam.Wcf.BehaviourSpecs
                 }
             }
         }
+
+        //public class AlwaysTransientErrorDetectionStrategy : ITransientErrorDetectionStrategy
+        //{
+        //    /// <summary>
+        //    /// Determines whether the specified exception is a transient failure that could be retried.
+        //    /// </summary>
+        //    /// <param name="ex">The exception.</param>
+        //    /// <returns>
+        //    ///   <c>true</c> if the exception is a transient failure that could be retried; otherwise <c>false</c>.
+        //    /// </returns>
+        //    public bool IsTransient(Exception ex)
+        //    {
+        //        return true;
+        //    }
+        //}
+
+        //[TestMethod]
+        //public async Task Sample3_Level300_AutomaticRetry_StaticServiceConsumerRetryPolicy_UsingMicrosoftTransientFaultHandling_WithConsumeAsyncMethod()
+        //{
+        //    ServiceConsumerFactory.DefaultExceptionBehaviourStrategy = new StandardOutServiceConsumerExceptionBehaviourStrategy();
+
+        //    var microsoftRetryStrategy = new Incremental(5, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2));
+        //    var microsoftRetryPolicy = new RetryPolicy<AlwaysTransientErrorDetectionStrategy>(microsoftRetryStrategy);
+        //    ServiceConsumerFactory.DefaultRetryPolicy = microsoftRetryPolicy.ForServiceConsumer(); // extension method
+        //    // or ServiceConsumerFactory.DefaultRetryPolicy = new ChannelAdam.TransientFaultHandling.RetryPolicyAdapter(microsoftRetryPolicy);
+        //    // or ServiceConsumerFactory.DefaultRetryPolicy = (ChannelAdam.TransientFaultHandling.IRetryPolicyFunction)microsoftRetryPolicy;
+
+        //    using (var service = ServiceConsumerFactory.Create<ISampleService>("BasicHttpBinding_ISampleService"))
+        //    //using (var service = ServiceConsumerFactory.Create<IFakeService>(() => new FakeServiceClient(), microsoftRetryPolicy.ForServiceConsumer()))
+        //    //using (var service = ServiceConsumerFactory.Create<IFakeService>(() => new FakeServiceClient()))
+        //    {
+        //        //service.RetryPolicy = microsoftRetryPolicy.ForServiceConsumer();
+        //        var result = await service.ConsumeAsync(operation => operation.AddTwoIntegersAsync(1, 1)).ConfigureAwait(false);
+
+        //        if (result.HasNoException)
+        //        {
+        //            Console.WriteLine("Actual: " + result.Value);
+        //            Assert.AreEqual(2, result.Value);
+        //        }
+        //        else
+        //        {
+        //            if (result.HasFaultException)
+        //            {
+        //                Console.WriteLine("Service operation threw a fault: " + result.Exception.ToString());
+        //            }
+        //            else if (result.HasException)
+        //            {
+        //                Console.WriteLine("Technical error occurred while calling the service operation: " + result.Exception.ToString());
+        //            }
+
+        //            Assert.Fail("Service operation was not successfully called");
+        //        }
+        //    }
+        //}
     }
 }

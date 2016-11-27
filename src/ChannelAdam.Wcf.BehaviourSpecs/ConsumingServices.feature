@@ -147,7 +147,7 @@ Given a service consumer is created with an operation that throws a 'fault' exce
 When the operation is called via the Consume method and a 'fault' exception occurs
 Then the service channel was not closed or aborted, and remains open and usable
 
-### Retry Policy
+### Retry Policy - Sync
 
 @UnitTest
 Scenario: ConsumingServices - 016 - Positive - Should use the default retry policy specified on the service consumer to perform retries with the Consume method
@@ -164,6 +164,26 @@ And the service consumer has a default retry policy with a retry policy attempt 
 When the operation is called via the Operations property and a 'communication' exception occurs
 Then the operation was invoked multiple times due to the retry policy
 Then the exception behaviour was invoked
+
+
+### Retry Policy - Async
+
+@UnitTest
+Scenario: ConsumingServices - 018 - Positive - Should use the default retry policy specified on the service consumer to perform retries with the ConsumeAsync method
+Given a service consumer is created with an asynchronous two-way task operation that throws a 'communication' exception in a retry scenario
+And the service consumer has a default retry policy with a retry policy attempt exception behaviour
+When the operation that throws some exceptions to retry is called via the ConsumeAsync method and a 'communication' exception occurs
+Then the operation was invoked multiple times due to the retry policy
+Then the exception behaviour was invoked
+
+@UnitTest
+Scenario: ConsumingServices - 019 - Positive - Should use the default retry policy specified on the service consumer to perform retries with the Operations property - with an async operation
+Given a service consumer is created with an asynchronous two-way task operation that throws a 'communication' exception in a retry scenario
+And the service consumer has a default retry policy with a retry policy attempt exception behaviour
+When the asynchronous operation that throws some exceptions to retry is called via the Operations property and a 'communication' exception occurs
+Then the operation was invoked multiple times due to the retry policy
+Then the exception behaviour was invoked
+
 
 
 ### Closing the channel ###

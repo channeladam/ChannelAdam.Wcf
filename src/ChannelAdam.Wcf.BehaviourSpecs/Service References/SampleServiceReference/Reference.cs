@@ -20,6 +20,12 @@ namespace ChannelAdam.Wcf.BehaviourSpecs.SampleServiceReference {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ISampleService/SampleOperation", ReplyAction="http://tempuri.org/ISampleService/SampleOperationResponse")]
         System.Threading.Tasks.Task<string> SampleOperationAsync(int value);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ISampleService/AddTwoIntegers", ReplyAction="http://tempuri.org/ISampleService/AddTwoIntegersResponse")]
+        int AddTwoIntegers(int value1, int value2);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ISampleService/AddTwoIntegers", ReplyAction="http://tempuri.org/ISampleService/AddTwoIntegersResponse")]
+        System.Threading.Tasks.Task<int> AddTwoIntegersAsync(int value1, int value2);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -55,6 +61,14 @@ namespace ChannelAdam.Wcf.BehaviourSpecs.SampleServiceReference {
         
         public System.Threading.Tasks.Task<string> SampleOperationAsync(int value) {
             return base.Channel.SampleOperationAsync(value);
+        }
+        
+        public int AddTwoIntegers(int value1, int value2) {
+            return base.Channel.AddTwoIntegers(value1, value2);
+        }
+        
+        public System.Threading.Tasks.Task<int> AddTwoIntegersAsync(int value1, int value2) {
+            return base.Channel.AddTwoIntegersAsync(value1, value2);
         }
     }
 }

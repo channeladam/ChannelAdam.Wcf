@@ -632,6 +632,66 @@ testRunner.Then("the exception behaviour was invoked", ((string)(null)), ((TechT
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ConsumingServices - 018 - Positive - Should use the default retry policy specifie" +
+            "d on the service consumer to perform retries with the ConsumeAsync method")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Consuming Services")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("UnitTest")]
+        public virtual void ConsumingServices_018_Positive_ShouldUseTheDefaultRetryPolicySpecifiedOnTheServiceConsumerToPerformRetriesWithTheConsumeAsyncMethod()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ConsumingServices - 018 - Positive - Should use the default retry policy specifie" +
+                    "d on the service consumer to perform retries with the ConsumeAsync method", new string[] {
+                        "UnitTest"});
+#line 172
+this.ScenarioSetup(scenarioInfo);
+#line 173
+testRunner.Given("a service consumer is created with an asynchronous two-way task operation that th" +
+                    "rows a \'communication\' exception in a retry scenario", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 174
+testRunner.And("the service consumer has a default retry policy with a retry policy attempt excep" +
+                    "tion behaviour", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 175
+testRunner.When("the operation that throws some exceptions to retry is called via the ConsumeAsync" +
+                    " method and a \'communication\' exception occurs", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 176
+testRunner.Then("the operation was invoked multiple times due to the retry policy", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 177
+testRunner.Then("the exception behaviour was invoked", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ConsumingServices - 019 - Positive - Should use the default retry policy specifie" +
+            "d on the service consumer to perform retries with the Operations property - with" +
+            " an async operation")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Consuming Services")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("UnitTest")]
+        public virtual void ConsumingServices_019_Positive_ShouldUseTheDefaultRetryPolicySpecifiedOnTheServiceConsumerToPerformRetriesWithTheOperationsProperty_WithAnAsyncOperation()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ConsumingServices - 019 - Positive - Should use the default retry policy specifie" +
+                    "d on the service consumer to perform retries with the Operations property - with" +
+                    " an async operation", new string[] {
+                        "UnitTest"});
+#line 180
+this.ScenarioSetup(scenarioInfo);
+#line 181
+testRunner.Given("a service consumer is created with an asynchronous two-way task operation that th" +
+                    "rows a \'communication\' exception in a retry scenario", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 182
+testRunner.And("the service consumer has a default retry policy with a retry policy attempt excep" +
+                    "tion behaviour", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 183
+testRunner.When("the asynchronous operation that throws some exceptions to retry is called via the" +
+                    " Operations property and a \'communication\' exception occurs", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 184
+testRunner.Then("the operation was invoked multiple times due to the retry policy", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 185
+testRunner.Then("the exception behaviour was invoked", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ConsumingServices - 020 - Negative - Should by default close the service channel " +
             "when a CommunicationException occurs while invoking a service operation")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Consuming Services")]
@@ -641,15 +701,15 @@ testRunner.Then("the exception behaviour was invoked", ((string)(null)), ((TechT
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ConsumingServices - 020 - Negative - Should by default close the service channel " +
                     "when a CommunicationException occurs while invoking a service operation", new string[] {
                         "UnitTest"});
-#line 172
+#line 192
 this.ScenarioSetup(scenarioInfo);
-#line 173
+#line 193
 testRunner.Given("a service consumer is created with an operation that throws a \'communication\' exc" +
                     "eption", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 174
+#line 194
 testRunner.When("the operation is called via the Consume method and a \'communication\' exception oc" +
                     "curs", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 175
+#line 195
 testRunner.Then("the service channel was closed and disposed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -665,14 +725,14 @@ testRunner.Then("the service channel was closed and disposed", ((string)(null)),
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ConsumingServices - 021 - Negative - Should by default close the service channel " +
                     "when a TimeoutException occurs while invoking a service operation", new string[] {
                         "UnitTest"});
-#line 178
+#line 198
 this.ScenarioSetup(scenarioInfo);
-#line 179
+#line 199
 testRunner.Given("a service consumer is created with an operation that throws a \'timeout\' exception" +
                     "", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 180
+#line 200
 testRunner.When("the operation is called via the Consume method and a \'timeout\' exception occurs", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 181
+#line 201
 testRunner.Then("the service channel was closed and disposed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -688,15 +748,15 @@ testRunner.Then("the service channel was closed and disposed", ((string)(null)),
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ConsumingServices - 022 - Negative - Should by default close the service channel " +
                     "when an unexpected Exception occurs while invoking a service operation", new string[] {
                         "UnitTest"});
-#line 184
+#line 204
 this.ScenarioSetup(scenarioInfo);
-#line 185
+#line 205
 testRunner.Given("a service consumer is created with an operation that throws a \'unexpected\' except" +
                     "ion", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 186
+#line 206
 testRunner.When("the operation is called via the Consume method and a \'unexpected\' exception occur" +
                     "s", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 187
+#line 207
 testRunner.Then("the service channel was closed and disposed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -710,13 +770,13 @@ testRunner.Then("the service channel was closed and disposed", ((string)(null)),
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ConsumingServices - 023 - Negative - Should by default close the service channel " +
                     "when a ThreadAbortedException occurs while invoking a service operation", ((string[])(null)));
-#line 189
+#line 209
 this.ScenarioSetup(scenarioInfo);
-#line 190
+#line 210
 testRunner.Given("a service consumer is created with an operation aborts the thread", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 191
+#line 211
 testRunner.When("the operation is invoked and the thread is aborted", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 192
+#line 212
 testRunner.Then("the service channel was closed and disposed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -732,18 +792,18 @@ testRunner.Then("the service channel was closed and disposed", ((string)(null)),
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ConsumingServices - 024 - Positive - Should have a customisable trigger strategy " +
                     "for when to close the service channel when any exception occurs while invoking a" +
                     " service operation", ((string[])(null)));
-#line 194
+#line 214
 this.ScenarioSetup(scenarioInfo);
-#line 195
+#line 215
 testRunner.Given("a service consumer is created with an operation that throws a \'communication\' exc" +
                     "eption", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 196
+#line 216
 testRunner.And("the service consumer has a custom service channel close trigger strategy that doe" +
                     "s not ever trigger the closing of the service channel", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 197
+#line 217
 testRunner.When("the operation is called via the Consume method and a \'communication\' exception oc" +
                     "curs", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 198
+#line 218
 testRunner.Then("the service channel was not closed or aborted, and remains open and usable", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -759,13 +819,13 @@ testRunner.Then("the service channel was not closed or aborted, and remains open
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ConsumingServices - 030 - Negative - Should abort the service channel whenever it" +
                     " faults", new string[] {
                         "UnitTest"});
-#line 205
+#line 225
 this.ScenarioSetup(scenarioInfo);
-#line 206
+#line 226
 testRunner.Given("a service consumer with a channel that will fault", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 207
+#line 227
 testRunner.When("the service channel faults", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 208
+#line 228
 testRunner.Then("the service channel was aborted and disposed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -781,14 +841,14 @@ testRunner.Then("the service channel was aborted and disposed", ((string)(null))
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ConsumingServices - 031 - Negative - Should abort the service channel when there " +
                     "is an exception closing the service channel", new string[] {
                         "UnitTest"});
-#line 211
+#line 231
 this.ScenarioSetup(scenarioInfo);
-#line 212
+#line 232
 testRunner.Given("a service consumer that will throw an \'unexpected\' exception when the service cha" +
                     "nnel is closing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 213
+#line 233
 testRunner.When("there is an attempt to close the service channel", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 214
+#line 234
 testRunner.Then("the service channel started closing, then aborted and disposed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -802,14 +862,14 @@ testRunner.Then("the service channel started closing, then aborted and disposed"
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ConsumingServices - 032 - Negative - Should abort the service channel when a Thre" +
                     "adAbortedException occurs while closing the service channel", ((string[])(null)));
-#line 216
+#line 236
 this.ScenarioSetup(scenarioInfo);
-#line 217
+#line 237
 testRunner.Given("a service consumer that will abort the thread when the service channel is closing" +
                     "", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 218
+#line 238
 testRunner.When("the service channel is closed and the thread is aborted", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 219
+#line 239
 testRunner.Then("the service channel started closing, then aborted and disposed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -825,13 +885,13 @@ testRunner.Then("the service channel started closing, then aborted and disposed"
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ConsumingServices - 040 - Positive - Should close the service channel when the sc" +
                     "ope of a Using block for a service consumer finishes", new string[] {
                         "UnitTest"});
-#line 225
+#line 245
 this.ScenarioSetup(scenarioInfo);
-#line 226
+#line 246
 testRunner.Given("a service consumer is created", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 227
+#line 247
 testRunner.When("a service consumer is disposed at the end of a using block", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 228
+#line 248
 testRunner.Then("the service channel was closed and disposed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -847,13 +907,13 @@ testRunner.Then("the service channel was closed and disposed", ((string)(null)),
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ConsumingServices - 041 - Positive - Should close the service channel when the Ga" +
                     "rbage Collector finalises the service consumer", new string[] {
                         "UnitTest"});
-#line 231
+#line 251
 this.ScenarioSetup(scenarioInfo);
-#line 232
+#line 252
 testRunner.Given("a service consumer is created for testing garbage collection", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 233
+#line 253
 testRunner.When("a service consumer is finalised by the garbage collector", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 234
+#line 254
 testRunner.Then("the service channel was closed and disposed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -870,14 +930,14 @@ testRunner.Then("the service channel was closed and disposed", ((string)(null)),
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ConsumingServices - 051 - Negative - Should perform the corresponding exception b" +
                     "ehaviour action when there is a <Xyz> Exception - while invoking a service opera" +
                     "tion", @__tags);
-#line 240
+#line 260
 this.ScenarioSetup(scenarioInfo);
-#line 241
+#line 261
 testRunner.Given(string.Format("a service consumer is created with an operation that throws a \'{0}\' exception and" +
                         " has a corresponding exception behaviour strategy", typeOfException), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 242
+#line 262
 testRunner.When(string.Format("the operation is called and a \'{0}\' exception occurs", typeOfException), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 243
+#line 263
 testRunner.Then("the exception behaviour was invoked", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -950,14 +1010,14 @@ testRunner.Then("the exception behaviour was invoked", ((string)(null)), ((TechT
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ConsumingServices - 052 - Negative - Should perform the corresponding exception b" +
                     "ehaviour action when there is a <Xyz> Exception - while closing a service channe" +
                     "l", @__tags);
-#line 252
+#line 272
 this.ScenarioSetup(scenarioInfo);
-#line 253
+#line 273
 testRunner.Given(string.Format("a service consumer that will throw an \'{0}\' exception when the service channel is" +
                         " closing and have a corresponding exception behaviour strategy", typeOfException), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 254
+#line 274
 testRunner.When("there is an attempt to close the service channel", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 255
+#line 275
 testRunner.Then("the exception behaviour was invoked", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -1015,14 +1075,14 @@ testRunner.Then("the exception behaviour was invoked", ((string)(null)), ((TechT
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ConsumingServices - 053 - Negative - Should perform the corresponding exception b" +
                     "ehaviour action when there is an exception while aborting a service channel", new string[] {
                         "UnitTest"});
-#line 263
+#line 283
 this.ScenarioSetup(scenarioInfo);
-#line 264
+#line 284
 testRunner.Given("a service consumer that will throw an exception while aborting, and has a corresp" +
                     "onding exception behaviour", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 265
+#line 285
 testRunner.When("the service channel faults", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 266
+#line 286
 testRunner.Then("the exception behaviour was invoked", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -1040,15 +1100,15 @@ testRunner.Then("the exception behaviour was invoked", ((string)(null)), ((TechT
                     "ehaviour action when there is an exception while the Garbage Collector is finali" +
                     "sing the service consumer", new string[] {
                         "UnitTest"});
-#line 269
+#line 289
 this.ScenarioSetup(scenarioInfo);
-#line 270
+#line 290
 testRunner.Given("a service consumer is created for testing garbage collection, and has a destructo" +
                     "r exception behaviour", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 271
+#line 291
 testRunner.When("a service consumer is finalised by the garbage collector and an exception occurs " +
                     "in the destructor of the service channel", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 272
+#line 292
 testRunner.Then("the exception behaviour was invoked", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -1064,13 +1124,13 @@ testRunner.Then("the exception behaviour was invoked", ((string)(null)), ((TechT
             }
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ConsumingServices - 060 - Negative - Should bubble an <Xyz> exception back to the" +
                     " caller when there is an exception while invoking a service operation", @__tags);
-#line 278
+#line 298
 this.ScenarioSetup(scenarioInfo);
-#line 279
+#line 299
 testRunner.Given(string.Format("a service consumer is created with an operation that throws a \'{0}\' exception", typeOfException), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 280
+#line 300
 testRunner.When("the operation is invoked and the exception occurs", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 281
+#line 301
 testRunner.Then(string.Format("a \'{0}\' exception bubbled up to the calling code", typeOfException), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -1140,14 +1200,14 @@ testRunner.Then(string.Format("a \'{0}\' exception bubbled up to the calling cod
             }
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ConsumingServices - 061 -  Negative - Should not bubble an exception back to the " +
                     "caller when there is a <Xyz> exception while closing a service channel", @__tags);
-#line 290
+#line 310
 this.ScenarioSetup(scenarioInfo);
-#line 291
+#line 311
 testRunner.Given(string.Format("a service consumer that will throw an \'{0}\' exception when the service channel is" +
                         " closing", typeOfException), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 292
+#line 312
 testRunner.When("there is an attempt to close the service channel", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 293
+#line 313
 testRunner.Then("the exception is not bubbled up to the calling code", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -1204,14 +1264,14 @@ testRunner.Then("the exception is not bubbled up to the calling code", ((string)
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ConsumingServices - 062 - Negative - Should not bubble an exception back to the c" +
                     "aller when there is an exception while aborting a service channel", new string[] {
                         "UnitTest"});
-#line 301
+#line 321
 this.ScenarioSetup(scenarioInfo);
-#line 302
+#line 322
 testRunner.Given("a service consumer that will throw an exception when the service channel is abort" +
                     "ing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 303
+#line 323
 testRunner.When("there is an attempt to close the service channel", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 304
+#line 324
 testRunner.Then("the exception is not bubbled up to the calling code", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -1223,14 +1283,14 @@ testRunner.Then("the exception is not bubbled up to the calling code", ((string)
         public virtual void ConsumingServices_070_Positive_ShouldNotLeakMemory()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ConsumingServices - 070 - Positive - Should not leak memory", ((string[])(null)));
-#line 309
+#line 329
 this.ScenarioSetup(scenarioInfo);
-#line 310
+#line 330
 testRunner.When("many service consumers are created and used in a tight loop and go out of scope i" +
                     "mmediately over \'15\' seconds", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 311
+#line 331
 testRunner.And("garbage collection is performed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 312
+#line 332
 testRunner.Then("there is no significant amount of memory loss", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

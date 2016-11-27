@@ -30,5 +30,10 @@ namespace ChannelAdam.Wcf.BehaviourSpecs.TestDoubles
         {
             return Task.FromResult(first + second);
         }
+
+        public Task<int> AddTwoIntegersWithExceptionsToRetryAsync(int first, int second)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

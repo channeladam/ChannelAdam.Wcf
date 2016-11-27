@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="FakeServiceClient.cs">
-//     Copyright (c) 2014 Adam Craven. All rights reserved.
+//     Copyright (c) 2014-2016 Adam Craven. All rights reserved.
 // </copyright>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,6 +29,8 @@ namespace ChannelAdam.Wcf.BehaviourSpecs.TestDoubles
     /// </summary>
     public class FakeServiceClient : System.ServiceModel.ClientBase<IFakeService>, IFakeService
     {
+        private static int _count = 0;
+
         public virtual void DoOneWayStuff()
         {
             // pretend to do something
@@ -42,6 +44,8 @@ namespace ChannelAdam.Wcf.BehaviourSpecs.TestDoubles
 
         public virtual int AddIntegers(int first, int second)
         {
+            Console.WriteLine("FakeServiceClient.AddIntegers()");
+
             // let's just pretend we called a service elsewhere - but don't tell anyone... ;)
             return first + second;
         }
@@ -52,9 +56,37 @@ namespace ChannelAdam.Wcf.BehaviourSpecs.TestDoubles
             return Task.FromResult<int>(first + second);
         }
 
+        public virtual Task<int> AddTwoIntegersWithExceptionsToRetryAsync(int first, int second)
+        {
+            _count++;
+
+            Console.WriteLine($"FakeServiceClient.AddTwoIntegersAsync() - count {_count}");
+
+            if (_count < 3)
+            {
+                Console.Write("throwing");
+
+                //throw new CommunicationException("bummer");
+
+                return (Task<int>)Task.Run(() =>
+                {
+                    throw new CommunicationException("bummer");
+#pragma warning disable CS0162 // Unreachable code detected
+                    return 0;
+#pragma warning restore CS0162 // Unreachable code detected
+                });
+            }
+
+            // let's just pretend we called a service elsewhere - but don't tell anyone... ;)
+            return Task.FromResult<int>(first + second);
+        }
+
         public new void Abort()
         {
         }
+
+#pragma warning disable RECS0083
+#pragma warning disable RECS0154 // Parameter is never used
 
         public IAsyncResult BeginClose(TimeSpan timeout, AsyncCallback callback, object state)
         {
@@ -79,6 +111,8 @@ namespace ChannelAdam.Wcf.BehaviourSpecs.TestDoubles
         public void Close(TimeSpan timeout)
         {
         }
+
+#pragma warning restore RECS0083 // Shows NotImplementedException throws in the quick task bar
 
         public new void Close()
         {
@@ -114,5 +148,7 @@ namespace ChannelAdam.Wcf.BehaviourSpecs.TestDoubles
         {
             get { return CommunicationState.Opened; }
         }
+
+#pragma warning restore RECS0154 // Parameter is never used
     }
 }
