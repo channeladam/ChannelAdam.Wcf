@@ -44,7 +44,8 @@ namespace ChannelAdam.Wcf.BehaviourSpecs.TestDoubles
 
         public virtual int AddIntegers(int first, int second)
         {
-            Console.WriteLine("FakeServiceClient.AddIntegers()");
+            // This causes the console output redirector StringBuilders to keep growing in size - not good for memory test!
+            //Console.WriteLine("FakeServiceClient.AddIntegers()");
 
             // let's just pretend we called a service elsewhere - but don't tell anyone... ;)
             return first + second;
