@@ -419,7 +419,7 @@ namespace ChannelAdam.ServiceModel.Internal
             {
                 // base.Invoke returns any exception in the ReturnMessage.Exception property.
                 // There is the slim possibility that an exception can still happen before that, which is why this is in a try/catch.
-                result = base.Invoke(message);
+                result = this.InvokeSupportingRefs(message, ProxiedObject);
             }
             catch (Exception ex)
             {

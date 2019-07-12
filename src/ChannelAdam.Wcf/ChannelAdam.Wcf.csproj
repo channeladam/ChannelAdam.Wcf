@@ -60,6 +60,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceModel\DefaultServiceChannelCloseTriggerStrategy.cs" />
+    <Compile Include="ServiceModel\Internal\DisposableObjectRealProxyExtensions.cs" />
     <Compile Include="ServiceModel\Internal\IServiceChannelProxy.cs" />
     <Compile Include="ServiceModel\Internal\IRetryEnabledServiceChannelProxyExceptionBehaviours.cs" />
     <Compile Include="ServiceModel\Internal\RetryEnabledDisposableServiceChannelProxy.cs" />
